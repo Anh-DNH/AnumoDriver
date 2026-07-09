@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="AnumoDriver.Designs.UserControls.InputSignal_Rotary_Uctrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
+             mc:Ignorable="d" Width="137" Height="48">
+    <Canvas>
+        <Label
+            Content="Rotate side:"
+            Foreground="White"
+        />
+        <ComboBox
+            Canvas.Top="26"
+            Width="137"
+        />
+
+    </Canvas>
+</UserControl>

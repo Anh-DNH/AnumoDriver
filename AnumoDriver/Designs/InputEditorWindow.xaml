@@ -1,0 +1,335 @@
+<Window x:Class="AnumoDriver.Designs.InputEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AnumoDriver.Designs"
+        xmlns:uc="clr-namespace:AnumoDriver.Designs.UserControls"
+        mc:Ignorable="d"
+        Title="InputEditorWindow"
+        Width="720" Height="850"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
+>
+    <Grid>
+        <Grid.OpacityMask>
+            <VisualBrush Visual="{Binding ElementName=Border1}" />
+        </Grid.OpacityMask>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="72"/>
+            <RowDefinition Height="36*"/>
+            <RowDefinition Height="325*"/>
+            <RowDefinition Height="28*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Border
+            x:Name="Border1"
+            CornerRadius="16"
+            Background="White"
+            Grid.ColumnSpan="2"
+            Grid.RowSpan="4"
+        >
+        </Border>
+
+        <!--#region Background-->
+        <Rectangle
+            Grid.ColumnSpan="2"
+            Grid.RowSpan="4"
+        >
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0.4,1">
+                    <GradientStop Color="#FFFFF4FB" Offset="0.0"/>
+                    <GradientStop Color="#FFFFF4FB" Offset="0.7"/>
+                    <GradientStop Color="#FFFF70CA" Offset="1.1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Viewbox
+            Stretch="UniformToFill"
+            Grid.ColumnSpan="2"
+            Grid.RowSpan="4"
+        >
+            <Canvas Width="720" Height="850" ClipToBounds="True">
+                <Ellipse
+                        Fill="#00000000"
+                        Width="400" Height="400"
+                        Stroke="#BFFF5895"
+                        StrokeThickness="4"
+                        Canvas.Left="-126" Canvas.Top="588"
+                    />
+                <Ellipse
+                        Fill="#BFFF5895"
+                        Width="320" Height="320"
+                        Canvas.Left="-86" Canvas.Top="628"
+                    />
+                <Ellipse
+                        Fill="#C3FF0046"
+                        Width="420" Height="420"
+                        Canvas.Left="385" Canvas.Top="608"
+                    />
+                <Ellipse
+                        Fill="#E5F9CADC"
+                        Width="240" Height="240"
+                        Canvas.Left="112" Canvas.Top="722"
+                    />
+            </Canvas>
+        </Viewbox>
+        <!--#endregion-->
+
+        <!--#region AppLayer CRUD-->
+        <Rectangle
+            x:Name="AppLayerSelectArea"
+            RadiusX="16"
+            RadiusY="16"
+            Margin="8,8,9,0"
+            Grid.ColumnSpan="2"
+        >
+            <Rectangle.Fill>
+                <SolidColorBrush Color="#000000" Opacity="0.75"/>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <ItemsControl
+            x:Name="AppLayerItemsControl"
+            Margin="24,34,100,8"
+            Grid.ColumnSpan="2"
+        >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Click="AppIcon_Click"
+                        Tag="{Binding}"
+                        Padding="1"
+                    >
+                        <Image
+                            Source="{Binding IconImage}"
+                            Height="24"
+                            Width="24"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                        />
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+        </ItemsControl>
+
+        <Image
+            x:Name="AppIcon"
+            Height="48"
+            VerticalAlignment="Top"
+            Margin="33,432,282,0"
+            Grid.Row="2"
+        />
+
+        <TextBlock 
+            x:Name="AppNameText" 
+            Text="App name" 
+            Foreground="White" 
+            FontSize="12"
+            FontWeight="Bold" 
+            VerticalAlignment="Top" Margin="56,13,143,0" Grid.ColumnSpan="2" Height="16"
+        />
+        <TextBlock 
+            Text="App:" 
+            Foreground="White" 
+            FontSize="12"
+            FontWeight="Bold" 
+            VerticalAlignment="Top" Margin="24,13,308,0" Height="16"
+        />
+
+        <Button
+            x:Name="AddAppButton" 
+            Content="Add"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Add a new application"
+            Click="AppAddButton_Click"
+            Margin="266,13,28,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Column="1"
+        />
+
+        <Button
+            x:Name="RemoveAppButton" 
+            Content="Remove"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Remove the selected application"
+            Click="RemoveAppButton_Click"
+            Margin="266,42,28,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Column="1"
+        />
+        <!--#endregion-->
+
+        <!--#region InputLayer CRUD-->
+        <Rectangle 
+            RadiusX="16"
+            RadiusY="16"
+            Margin="8,8,9,0"
+            Grid.Row="1"
+            Grid.ColumnSpan="2">
+            <Rectangle.Fill>
+                <SolidColorBrush Color="#000000" Opacity="0.75"/>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <TextBlock 
+            x:Name="LayerButtonText" 
+            Text="Layer: 1" 
+            Foreground="White" 
+            FontSize="12"
+            FontWeight="Bold" 
+            VerticalAlignment="Top" Margin="24,13,114,0" Grid.Row="1" Height="16"
+        />
+
+        <ItemsControl
+            x:Name="InputLayerItemsControl"
+            Margin="23,37,104,0"
+            Height="25"
+            VerticalAlignment="Top"
+            Grid.Row="1" Grid.ColumnSpan="2"
+        >
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button
+                        Background="#FF868383"
+                        Foreground="White"
+                        Cursor="Hand"
+                        Click="InputLayer_Click"
+                        Tag="{Binding}"
+                        Padding="4,4"
+                        Margin="2,0"
+                        Content="{Binding Index, StringFormat='Layer {0}'}"
+                    />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+        </ItemsControl>
+
+        <Button
+            x:Name="AddInputLayerButton" 
+            Content="Add"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Add new input layer"
+            Margin="266,13,28,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Column="1" Grid.Row="1" Click="AddInputLayerButton_Click"
+        />
+        <Button
+            x:Name="RemoveInputLayerButton" 
+            Content="Remove"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Remove selected input layer"
+            Margin="266,42,28,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Column="1" Grid.Row="1" Click="RemoveInputLayerButton_Click"
+        />
+
+        <!--#endregion-->
+
+        <!--#region Inputs List-->
+        <ScrollViewer
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            Margin="8,8,0,0"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled"
+            HorizontalAlignment="Left"
+            Width="703"
+            Height="500"
+            VerticalAlignment="Top"
+        >
+            <ItemsControl
+                x:Name="InputsItemsControl"
+            >
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <uc:InputInfoUctrl/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+        <!--#endregion-->
+
+        <Button
+            x:Name="SaveButton" 
+            Content="Save"
+            Background="#FF868383"
+            Foreground="White"
+            
+            ToolTip="Connect to selected port"
+            Margin="270,18,22,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Column="1" Grid.Row="3"
+        />
+        <Button
+            x:Name="SaveNewButton" 
+            Content="Save New"
+            Background="#FF868383"
+            Foreground="White"
+            
+            ToolTip="Connect to selected port"
+            Margin="172,18,97,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Column="1" Grid.Row="3"
+        />
+        <Button
+            x:Name="CancelButton" 
+            Content="Cancel"
+            Background="#FF868383"
+            Foreground="White"
+            
+            ToolTip="Connect to selected port"
+            Margin="22,18,270,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Row="3" Click="CancelButton_Click"
+        />
+        <Button
+            x:Name="LoadButton" 
+            Content="Load"
+            Background="#FF868383"
+            Foreground="White"
+            
+            ToolTip="Connect to selected port"
+            Margin="73,18,219,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Column="1" Grid.Row="3"
+        />
+
+    </Grid>
+</Window>

@@ -1,0 +1,146 @@
+﻿<UserControl x:Class="AnumoDriver.Designs.UserControls.InputInfoUctrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
+             xmlns:c="clr-namespace:AnumoDriver.Utilities"
+             mc:Ignorable="d" Width="630" Height="92">
+    <UserControl.Resources>
+        <c:EnumToStringConverter x:Key="EnumToStringConverter"/>
+    </UserControl.Resources>
+    <Canvas>
+
+        <!--Background-->
+        <Rectangle 
+            RadiusX="16"
+            RadiusY="16"
+            HorizontalAlignment="Left"
+            Width="630"
+            Height="84"
+            VerticalAlignment="Center" Grid.RowSpan="2"
+        >
+            <Rectangle.Fill>
+                <SolidColorBrush Color="#000000" Opacity="0.75"/>
+            </Rectangle.Fill>
+        </Rectangle>
+        
+        <!--Input Name-->
+        <TextBlock
+            Canvas.Left="15" 
+            Canvas.Top="4"
+            Foreground="White"
+            TextWrapping="Wrap"
+            Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+            FontSize="24"
+            Width="327"
+            Height="36"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+        />
+
+        <!--Input Signal Label & Name-->
+        <Label
+            Content="SIGNAL"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Foreground="White"
+            Width="52"
+            Height="25"
+            Grid.Row="1"
+            Canvas.Left="11"
+            Canvas.Top="35"
+        />
+
+        <TextBlock
+            Canvas.Left="15" 
+            Foreground="White"
+            TextWrapping="Wrap"
+            Text="{Binding SignalType, Converter={StaticResource EnumToStringConverter}, UpdateSourceTrigger=PropertyChanged}"
+            FontSize="20" 
+            Canvas.Top="51"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center" 
+            Width="225"
+            Height="28"
+        />
+
+        <!--Input Action Label & Name-->
+        <Label
+            Content="ACTION"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Foreground="White"
+            Width="52"
+            Height="24" Grid.Row="2" Canvas.Left="267" Canvas.Top="35"
+        />
+        
+        <TextBlock
+            Canvas.Left="271" 
+            Foreground="White"
+            TextWrapping="Wrap"
+            Text="{Binding ActionType, Converter={StaticResource EnumToStringConverter}, UpdateSourceTrigger=PropertyChanged}"
+            FontSize="20" 
+            Canvas.Top="51"
+            HorizontalAlignment="Left" VerticalAlignment="Center" 
+            Width="225"
+            Height="28"
+        />
+
+        <!--Buttons-->
+        <Button
+            x:Name="MoveInputUpButton" 
+            Content="↑"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Add a new application"
+            Cursor="Hand"
+            Height="24"
+            Width="25"
+            HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="505" Canvas.Top="14"
+        />
+        <Button
+            x:Name="MoveInputDownButton" 
+            Content="↓"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Add a new application"
+            Cursor="Hand"
+            Height="24"
+            Canvas.Top="48"
+            Width="25"
+            Canvas.Left="505"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+        />
+        <Button
+            x:Name="EditInputButton" 
+            Content="EDIT"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Add a new application"
+            Cursor="Hand"
+            Height="24"
+            Width="72"
+            Canvas.Left="542"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Canvas.Top="14"
+        />
+        <Button
+            x:Name="RemoveInputButton" 
+            Content="REMOVE"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Add a new application"
+            Cursor="Hand"
+            Height="24"
+            Canvas.Top="48"
+            Width="72"
+            Canvas.Left="542"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+        />
+        
+    </Canvas>
+</UserControl>

@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="AnumoDriver.Designs.UserControls.InputAction_SimulateKeyboardKeys_Uctrl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
+             mc:Ignorable="d" Height="98" Width="185">
+    <Canvas>
+        
+        <TextBox 
+            x:Name="MouseScrollDeltaTextBox"
+            TextWrapping="Wrap"
+            Text="&#xD;&#xA;"
+            Width="185"
+            HorizontalAlignment="Left" Height="69" VerticalAlignment="Center"
+        />
+        
+        <Button
+            x:Name="EditKeyboardInputButton" 
+            Content="Edit Keyboard Keys"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Add a new application"
+            Click="EditKeyboardInputButton_Click"
+            Cursor="Hand"
+            Height="24"
+            Canvas.Top="74" 
+            VerticalAlignment="Center"
+            Width="185"
+            HorizontalAlignment="Left"
+        />
+
+    </Canvas>
+</UserControl>
