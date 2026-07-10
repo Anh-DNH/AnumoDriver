@@ -29,9 +29,9 @@ public class InputSimulator : IDisposable
     private const uint MOUSEF_RIGHTUP = 0x0010;
     private const uint MOUSEF_MIDDLEDW = 0x0020;
     private const uint MOUSEF_MIDDLEUP = 0x0040;
-    private const uint MOUSEF_XDW = 0x0004;
-    private const uint MOUSEF_XUP = 0x0004;
-    private const uint MOUSEF_VWHEEL = 0x0004;
+    private const uint MOUSEF_XDW = 0x0080;
+    private const uint MOUSEF_XUP = 0x0100;
+    private const uint MOUSEF_VWHEEL = 0x0800;
 
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);

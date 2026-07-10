@@ -196,7 +196,6 @@
 
         <TextBlock 
             x:Name="LayerButtonText" 
-            Text="Layer: 1" 
             Foreground="White" 
             FontSize="12"
             FontWeight="Bold" 
@@ -264,9 +263,9 @@
             VerticalScrollBarVisibility="Auto"
             HorizontalScrollBarVisibility="Disabled"
             HorizontalAlignment="Left"
-            Width="703"
-            Height="500"
             VerticalAlignment="Top"
+            Width="703"
+            Height="520"
         >
             <ItemsControl
                 x:Name="InputsItemsControl"
@@ -279,11 +278,23 @@
 
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical"/>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+
             </ItemsControl>
         </ScrollViewer>
+        
+        <Button
+            x:Name="AddInputButton" 
+            Content="ADD NEW INPUT"
+            Background="#FF868383"
+            Foreground="White"
+            ToolTip="Add new input layer"
+            Margin="188,533,10,0"
+            Cursor="Hand" Height="35"
+            VerticalAlignment="Top" Grid.Column="1" Grid.Row="2" Click="AddInputButton_Click"
+        />
         <!--#endregion-->
 
         <Button

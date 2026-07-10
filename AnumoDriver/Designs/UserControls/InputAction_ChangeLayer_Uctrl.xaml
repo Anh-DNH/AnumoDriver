@@ -4,8 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
-             mc:Ignorable="d" Width="120" Height="44">
+             mc:Ignorable="d"
+             Width="120"
+             Height="44"
+             HorizontalAlignment="Left"
+             VerticalAlignment="Top"
+             Loaded="UserControl_Loaded"
+>
     <Canvas>
+        
         <Label
             Foreground="White"
             Content="Layer:"
@@ -14,10 +21,11 @@
             Width="120"
         />
         <TextBox 
+            x:Name="LayerIndexTextBox"
             TextWrapping="Wrap"
-            Text="0"
             Canvas.Top="26"
             Width="120"
+            TextChanged="LayerIndexTextBox_TextChanged"
         />
 
     </Canvas>

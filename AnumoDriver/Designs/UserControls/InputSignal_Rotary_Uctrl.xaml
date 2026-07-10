@@ -1,18 +1,42 @@
-﻿<UserControl x:Class="AnumoDriver.Designs.UserControls.InputSignal_Rotary_Uctrl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
-             mc:Ignorable="d" Width="137" Height="48">
+﻿<UserControl 
+    x:Class="AnumoDriver.Designs.UserControls.InputSignal_Rotary_Uctrl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
+    mc:Ignorable="d" Width="111" Height="92"
+    HorizontalAlignment="Left"
+    VerticalAlignment="Top"
+    Loaded="UserControl_Loaded"
+>
     <Canvas>
+
         <Label
+            Content="Rotary Index:"
+            Width="111" Foreground="White"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+        />
+        <TextBox
+            x:Name="RotaryIndexTextBox"
+            TextWrapping="Wrap"
+            Canvas.Top="26"
+            Width="111"
+            TextChanged="RotaryIndexTextBox_TextChanged"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+        />
+        <Label
+
             Content="Rotate side:"
-            Foreground="White"
+            Foreground="White" HorizontalAlignment="Center" Canvas.Top="44" VerticalAlignment="Top"
         />
         <ComboBox
-            Canvas.Top="26"
-            Width="137"
+            x:Name="RotateSideComboBox"
+            Canvas.Top="70"
+            Width="111"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            SelectionChanged="RotateSideComboBox_SelectionChanged"
         />
 
     </Canvas>

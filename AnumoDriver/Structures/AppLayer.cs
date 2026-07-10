@@ -8,29 +8,28 @@ namespace AnumoDriver.Structures;
 
 public class AppLayer : INotifyPropertyChanged
 {
-    private string _name;
-    private string _exePath;
-    private ImageSource _iconImage;
-    private int _inputLayerIndex;
 
     public AppLayer(string name, string exePath)
     {
         _name = name;
         _exePath = exePath;
-        InputLayers = new ObservableCollection<InputLayer>();
+        InputLayers = [];
     }
+
 
     public string Name
     {
         get => _name;
         set => SetProperty(ref _name, value);
     }
+    private string _name;
 
     public string ExePath
     {
         get => _exePath;
         set => SetProperty(ref _exePath, value);
     }
+    private string _exePath;
 
     [JsonIgnore]
     public ImageSource IconImage
@@ -38,16 +37,20 @@ public class AppLayer : INotifyPropertyChanged
         get => _iconImage;
         set => SetProperty(ref _iconImage, value);
     }
-
-    [JsonIgnore]
-    public ObservableCollection<InputLayer> InputLayers { get; }
+    private ImageSource _iconImage;
 
     public int InputLayerIndex
     {
         get => _inputLayerIndex;
         set => SetProperty(ref _inputLayerIndex, value);
     }
+    private int _inputLayerIndex;
 
+    [JsonIgnore]
+    public ObservableCollection<InputLayer> InputLayers { get; }
+
+
+    #region INotifyPropertyChanged stuff
     public event PropertyChangedEventHandler PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -64,4 +67,5 @@ public class AppLayer : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
+    #endregion
 }

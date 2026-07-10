@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace AnumoDriver.Structures.INPUT;
 
@@ -162,5 +163,7 @@ public class InputSignal_Key : InputSignal
                 return;
         }
     }
+
+
 }
 

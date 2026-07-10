@@ -173,13 +173,13 @@ public partial class MainWindow : Window
         }
     }
 
-    private void PinButton_Click(object sender, System.Windows.RoutedEventArgs e)
+    private void PinButton_Click(object sender, RoutedEventArgs e)
     {
         _isWindowPinned = !_isWindowPinned;
 
         if (_isWindowPinned)
         {
-            PinButton.Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(128, 128, 128));
+            PinButton.Background = new SolidColorBrush(Color.FromRgb(128, 128, 128));
             TitleBar.Cursor = Cursors.Arrow;
         }
         else
@@ -189,7 +189,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void CloseButton_Click(object sender, System.Windows.RoutedEventArgs e)
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
     {
         _communicator.Disconnect();
         Close();

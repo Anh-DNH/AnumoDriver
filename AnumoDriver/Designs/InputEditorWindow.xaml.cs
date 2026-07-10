@@ -1,5 +1,6 @@
 ﻿using AnumoDriver.Controllers;
 using AnumoDriver.Structures;
+using AnumoDriver.Structures.INPUT;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
@@ -16,6 +17,7 @@ namespace AnumoDriver.Designs;
 public partial class InputEditorWindow : Window
 {
     private readonly InputController _inputController;
+    private AppLayer _selectedAppLayer;
     private InputLayer _selectedInputLayer;
 
     public InputEditorWindow(InputController inputController)
@@ -27,13 +29,20 @@ public partial class InputEditorWindow : Window
 
     public void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        _selectedAppLayer = _inputController.AppLayerList[0];
+        _selectedInputLayer = _selectedAppLayer.InputLayers[0];
+
+        SelectAppLayer(_inputController.AppLayerList[0]);
+
         AppLayerItemsControl.ItemsSource = _inputController.AppLayerList;
-        InputLayerItemsControl.ItemsSource = _inputController.CurrentAppLayer.InputLayers;
+        InputLayerItemsControl.ItemsSource = _selectedAppLayer.InputLayers;
         InputsItemsControl.ItemsSource = _inputController.CurrentInputLayer?.Inputs;
     }
 
     private void AppIcon_Click(object sender, RoutedEventArgs e)
     {
+        if (sender is Button button && button.Tag is AppLayer selectedAppLayer)
+            SelectAppLayer(selectedAppLayer);
     }
 
     private void AppAddButton_Click(object sender, RoutedEventArgs e)
@@ -66,9 +75,7 @@ public partial class InputEditorWindow : Window
                 newAppLayer.InputLayers.Add(newInputLayer);
 
                 _inputController.AppLayerList.Add(newAppLayer);
-
-                if (newAppLayer.IconImage != null)
-                    AppIcon.Source = newAppLayer.IconImage;
+                SelectAppLayer(newAppLayer);
 
                 Trace.WriteLine($"Added new app layer: {appName} from {exePath}");
             }
@@ -77,6 +84,120 @@ public partial class InputEditorWindow : Window
                 Trace.WriteLine($"Failed to extract icon from {exePath}: {ex.Message}");
             }
         }
+    }
+
+    private void RemoveAppButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedAppLayer == null)
+        {
+            MessageBox.Show("Please select an app layer to remove.", "No Selection");
+            return;
+        }
+
+        if (_selectedAppLayer == _inputController.AppLayerList[0])
+        {
+            MessageBox.Show("Cannot remove the default layer.", "WARNING");
+            return;
+        }
+
+        var i = _inputController.AppLayerList.IndexOf(_selectedAppLayer);
+        _inputController.AppLayerList.RemoveAt(i);
+
+        SelectAppLayer(_inputController.AppLayerList[i == _inputController.AppLayerList.Count ? i - 1 : i]);
+
+        Trace.WriteLine($"Removed app layer: {_selectedAppLayer.Name}");
+
+    }
+
+    private void InputLayer_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is InputLayer selectedInputLayer)
+        {
+            SelectInputLayer(selectedInputLayer);
+        }
+    }
+
+    private void AddInputLayerButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var newInputLayer = new InputLayer
+            {
+                Index = _selectedAppLayer.InputLayers.Count
+            };
+
+            _selectedAppLayer.InputLayers.Add(newInputLayer);
+            SelectInputLayer(newInputLayer);
+
+            Trace.WriteLine($"Added new input layer with index: {_selectedInputLayer.Index}");
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine($"Failed to add input layer: {ex.Message}");
+            MessageBox.Show($"Failed to add input layer: {ex.Message}", "Error");
+        }
+    }
+
+    private void RemoveInputLayerButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_selectedInputLayer == null)
+        {
+            MessageBox.Show("Please select an input layer to remove.", "No Selection");
+            return;
+        }
+
+        if (_selectedAppLayer.InputLayers.Count == 1)
+        {
+            MessageBox.Show("Cannot remove the last input layer.\nAt least one layer must remain.", "Cannot Remove");
+            return;
+        }
+
+        try
+        {
+            var i = _selectedInputLayer.Index;
+            _selectedAppLayer.InputLayers.RemoveAt(i);
+
+            // Re-index remaining layers
+            if (_selectedAppLayer.InputLayers.Count > 1)
+            {
+                for (int ii = i; ii < _selectedAppLayer.InputLayers.Count; ii++)
+                    _selectedAppLayer.InputLayers[ii].Index = ii;
+            }
+            SelectInputLayer(_selectedAppLayer.InputLayers[i == _selectedAppLayer.InputLayers.Count ? i - 1 : i]);
+
+            Trace.WriteLine($"Removed input layer at index: {i}");
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine($"Failed to remove input layer: {ex.Message}");
+            MessageBox.Show($"Failed to remove input layer: {ex.Message}", "Error");
+        }
+    }
+
+    private void SelectAppLayer(AppLayer selectedAppLayer)
+    {
+        _selectedAppLayer = selectedAppLayer;
+        SelectInputLayer(_selectedAppLayer.InputLayers[0]);
+
+        AppNameText.Text = _selectedAppLayer.Name;
+
+        InputLayerItemsControl.ItemsSource = _selectedAppLayer.InputLayers;
+    }
+
+    private void SelectInputLayer(InputLayer selectedInputLayer)
+    {
+        _selectedInputLayer = selectedInputLayer;
+
+        LayerButtonText.Text = $"Layer: {_selectedInputLayer.Index}";
+
+        InputsItemsControl.ItemsSource = _selectedInputLayer.Inputs;
+    }
+
+    private void AddInputButton_Click(object sender, RoutedEventArgs e)
+    {
+        var newInput = new Input();
+
+        _selectedInputLayer.Inputs.Add(newInput);
     }
 
     private ImageSource ExtractIconFromFile(string filePath)
@@ -95,115 +216,6 @@ public partial class InputEditorWindow : Window
         return null;
     }
 
-    private void RemoveAppButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_inputController.CurrentAppLayer == null)
-        {
-            MessageBox.Show("Please select an app layer to remove.", "No Selection");
-            return;
-        }
-
-        if (_inputController.CurrentAppLayer == _inputController.AppLayerList[0])
-        {
-            MessageBox.Show("Cannot remove the default layer.", "WARNING");
-            return;
-        }
-
-        _inputController.AppLayerList.Remove(_inputController.CurrentAppLayer);
-        Trace.WriteLine($"Removed app layer: {_inputController.CurrentAppLayer.Name}");
-    }
-
-    private void InputLayer_Click(object sender, RoutedEventArgs e)
-    {
-        if (sender is Button button && button.Tag is InputLayer selectedInputLayer)
-        {
-            SelectInputLayer(selectedInputLayer);
-        }
-    }
-
-    private void SelectInputLayer(InputLayer inputLayer)
-    {
-        if (inputLayer == null)
-            return;
-
-        _selectedInputLayer = inputLayer;
-
-        // Find the index of the input layer in the current app layer
-        int layerIndex = _inputController.CurrentAppLayer.InputLayers.IndexOf(inputLayer);
-        if (layerIndex >= 0)
-        {
-            _inputController.ChangeInputLayer(layerIndex);
-            LayerButtonText.Text = $"Layer: {inputLayer.Index + 1}";
-            Trace.WriteLine($"Selected input layer: {inputLayer.Index}");
-        }
-    }
-
-    private void AddInputLayerButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_inputController.CurrentAppLayer == null)
-        {
-            MessageBox.Show("Please select an app layer first.", "No App Selected");
-            return;
-        }
-
-        try
-        {
-            int newIndex = _inputController.CurrentAppLayer.InputLayers.Count;
-            var newInputLayer = new InputLayer { Index = newIndex };
-
-            _inputController.CurrentAppLayer.InputLayers.Add(newInputLayer);
-
-            SelectInputLayer(newInputLayer);
-
-            Trace.WriteLine($"Added new input layer with index: {newIndex}");
-        }
-        catch (Exception ex)
-        {
-            Trace.WriteLine($"Failed to add input layer: {ex.Message}");
-            MessageBox.Show($"Failed to add input layer: {ex.Message}", "Error");
-        }
-    }
-
-    private void RemoveInputLayerButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_selectedInputLayer == null)
-        {
-            MessageBox.Show("Please select an input layer to remove.", "No Selection");
-            return;
-        }
-
-        if (_inputController.CurrentAppLayer.InputLayers.Count <= 1)
-        {
-            MessageBox.Show("Cannot remove the last input layer. At least one layer must remain.", "Cannot Remove");
-            return;
-        }
-
-        try
-        {
-            int removedIndex = _selectedInputLayer.Index;
-            _inputController.CurrentAppLayer.InputLayers.Remove(_selectedInputLayer);
-
-            // Re-index remaining layers
-            for (int i = 0; i < _inputController.CurrentAppLayer.InputLayers.Count; i++)
-            {
-                _inputController.CurrentAppLayer.InputLayers[i].Index = i;
-            }
-
-            // Select the first remaining layer
-            if (_inputController.CurrentAppLayer.InputLayers.Count > 0)
-            {
-                SelectInputLayer(_inputController.CurrentAppLayer.InputLayers[0]);
-            }
-
-            Trace.WriteLine($"Removed input layer at index: {removedIndex}");
-        }
-        catch (Exception ex)
-        {
-            Trace.WriteLine($"Failed to remove input layer: {ex.Message}");
-            MessageBox.Show($"Failed to remove input layer: {ex.Message}", "Error");
-        }
-    }
-
     private void ConnectButton_Copy1_Click(object sender, RoutedEventArgs e)
     {
 
@@ -218,4 +230,5 @@ public partial class InputEditorWindow : Window
     {
 
     }
+
 }

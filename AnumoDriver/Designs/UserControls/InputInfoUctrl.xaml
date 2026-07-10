@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
              xmlns:c="clr-namespace:AnumoDriver.Utilities"
-             mc:Ignorable="d" Width="630" Height="92">
+             mc:Ignorable="d" Width="680" Height="92">
     <UserControl.Resources>
-        <c:EnumToStringConverter x:Key="EnumToStringConverter"/>
+        <c:EnumToTitleConverter x:Key="EnumToTitleConverter"/>
     </UserControl.Resources>
     <Canvas>
 
@@ -16,7 +16,7 @@
             RadiusX="16"
             RadiusY="16"
             HorizontalAlignment="Left"
-            Width="630"
+            Width="680"
             Height="84"
             VerticalAlignment="Center" Grid.RowSpan="2"
         >
@@ -24,7 +24,7 @@
                 <SolidColorBrush Color="#000000" Opacity="0.75"/>
             </Rectangle.Fill>
         </Rectangle>
-        
+
         <!--Input Name-->
         <TextBlock
             Canvas.Left="15" 
@@ -33,7 +33,7 @@
             TextWrapping="Wrap"
             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
             FontSize="24"
-            Width="327"
+            Width="528"
             Height="36"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
@@ -56,12 +56,12 @@
             Canvas.Left="15" 
             Foreground="White"
             TextWrapping="Wrap"
-            Text="{Binding SignalType, Converter={StaticResource EnumToStringConverter}, UpdateSourceTrigger=PropertyChanged}"
+            Text="{Binding SignalType, Converter={StaticResource EnumToTitleConverter}, UpdateSourceTrigger=PropertyChanged}"
             FontSize="20" 
             Canvas.Top="51"
             HorizontalAlignment="Left"
             VerticalAlignment="Center" 
-            Width="225"
+            Width="260"
             Height="28"
         />
 
@@ -72,18 +72,18 @@
             VerticalAlignment="Center"
             Foreground="White"
             Width="52"
-            Height="24" Grid.Row="2" Canvas.Left="267" Canvas.Top="35"
+            Height="24" Grid.Row="2" Canvas.Left="279" Canvas.Top="35"
         />
-        
+
         <TextBlock
-            Canvas.Left="271" 
+            Canvas.Left="283" 
             Foreground="White"
             TextWrapping="Wrap"
-            Text="{Binding ActionType, Converter={StaticResource EnumToStringConverter}, UpdateSourceTrigger=PropertyChanged}"
+            Text="{Binding ActionType, Converter={StaticResource EnumToTitleConverter}, UpdateSourceTrigger=PropertyChanged}"
             FontSize="20" 
             Canvas.Top="51"
             HorizontalAlignment="Left" VerticalAlignment="Center" 
-            Width="225"
+            Width="260"
             Height="28"
         />
 
@@ -97,7 +97,7 @@
             Cursor="Hand"
             Height="24"
             Width="25"
-            HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="505" Canvas.Top="14"
+            HorizontalAlignment="Left" VerticalAlignment="Center" Canvas.Left="558" Canvas.Top="14"
         />
         <Button
             x:Name="MoveInputDownButton" 
@@ -109,7 +109,7 @@
             Height="24"
             Canvas.Top="48"
             Width="25"
-            Canvas.Left="505"
+            Canvas.Left="558"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
         />
@@ -122,10 +122,10 @@
             Cursor="Hand"
             Height="24"
             Width="72"
-            Canvas.Left="542"
+            Canvas.Left="595"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
-            Canvas.Top="14"
+            Canvas.Top="14" Click="EditInputButton_Click"
         />
         <Button
             x:Name="RemoveInputButton" 
@@ -137,10 +137,10 @@
             Height="24"
             Canvas.Top="48"
             Width="72"
-            Canvas.Left="542"
+            Canvas.Left="595"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
         />
-        
+
     </Canvas>
 </UserControl>

@@ -6,15 +6,13 @@ public class InputAction
     {
         SimulateKeyboardKeys,
 
-        MoveMouse,
+        //MoveMouse,
         ClickMouseButton,
         RollMouseWheel,
 
         WriteText,
         ChangeLayer
     }
-
-    public virtual string Title { get; }
 
     public Input Input { get; set; }
 

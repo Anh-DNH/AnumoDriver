@@ -1,38 +1,67 @@
-﻿<UserControl x:Class="AnumoDriver.Designs.UserControls.InputSignal_Key_Uctrl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
-             mc:Ignorable="d" Height="121" Width="222">
+﻿<UserControl 
+    x:Class="AnumoDriver.Designs.UserControls.InputSignal_Key_Uctrl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:AnumoDriver.Designs.UserControls"
+    mc:Ignorable="d"
+    Height="136"
+    Width="111"
+    HorizontalAlignment="Left"
+    VerticalAlignment="Top"
+    Loaded="UserControl_Loaded"
+>
     <Canvas>
-        <ComboBox
+        
+        <Label
+            Content="Key Code:"
+            Width="111" Foreground="White"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+        />
+        <TextBox
+            x:Name="KeyCodeTextBox"
+            TextWrapping="Wrap"
+            Canvas.Top="26"
+            Width="111"
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
-            Width="222" Canvas.Top="26"
+            TextChanged="KeyCodeTextBox_TextChanged"
         />
+
         <Label
-            Content="Key press type"
+            Content="Key Press Type:"
             HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Width="222" Foreground="White"
+            VerticalAlignment="Center"
+            Width="111" Foreground="White" Canvas.Top="44"
+        />
+        <ComboBox
+            x:Name="KeyPressTypeComboBox"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Width="111" Canvas.Top="70" SelectionChanged="KeyPressTypeComboBox_SelectionChanged"
         />
 
         <Canvas
             x:Name="ShowWhenTypeEqualMultiple"
+            Visibility="Visible"
         >
             <Label
-                Content="Press counts:"
-                Width="222" Foreground="White"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Canvas.Top="48"
+                Content="Click Counts:"
+                Width="111" Foreground="White"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Canvas.Top="92"
             />
             <TextBox
+                x:Name="ClickCountTextBox"
                 TextWrapping="Wrap"
-                Text="2"
-                Canvas.Top="74"
-                Width="111" HorizontalAlignment="Left" VerticalAlignment="Center"
+                Canvas.Top="118"
+                Width="111"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                TextChanged="ClickCountTextBox_TextChanged"
             />
         </Canvas>
 
