@@ -20,6 +20,8 @@ public partial class InputEditorWindow : Window
     private AppLayer _selectedAppLayer;
     private InputLayer _selectedInputLayer;
 
+    private List<InputDataEditorWindow> _inputDataEditors = [];
+
     public InputEditorWindow(InputController inputController)
     {
         _inputController = inputController;
@@ -29,15 +31,10 @@ public partial class InputEditorWindow : Window
 
     public void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        _selectedAppLayer = _inputController.AppLayerList[0];
-        _selectedInputLayer = _selectedAppLayer.InputLayers[0];
-
-        SelectAppLayer(_inputController.AppLayerList[0]);
-
         AppLayerItemsControl.ItemsSource = _inputController.AppLayerList;
-        InputLayerItemsControl.ItemsSource = _selectedAppLayer.InputLayers;
-        InputsItemsControl.ItemsSource = _inputController.CurrentInputLayer?.Inputs;
+        SelectAppLayer(_inputController.AppLayerList[0]);
     }
+
 
     private void AppIcon_Click(object sender, RoutedEventArgs e)
     {
@@ -109,6 +106,7 @@ public partial class InputEditorWindow : Window
 
     }
 
+
     private void InputLayer_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is InputLayer selectedInputLayer)
@@ -119,23 +117,15 @@ public partial class InputEditorWindow : Window
 
     private void AddInputLayerButton_Click(object sender, RoutedEventArgs e)
     {
-        try
+        var newInputLayer = new InputLayer
         {
-            var newInputLayer = new InputLayer
-            {
-                Index = _selectedAppLayer.InputLayers.Count
-            };
+            Index = _selectedAppLayer.InputLayers.Count
+        };
 
-            _selectedAppLayer.InputLayers.Add(newInputLayer);
-            SelectInputLayer(newInputLayer);
+        _selectedAppLayer.InputLayers.Add(newInputLayer);
+        SelectInputLayer(newInputLayer);
 
-            Trace.WriteLine($"Added new input layer with index: {_selectedInputLayer.Index}");
-        }
-        catch (Exception ex)
-        {
-            Trace.WriteLine($"Failed to add input layer: {ex.Message}");
-            MessageBox.Show($"Failed to add input layer: {ex.Message}", "Error");
-        }
+        Trace.WriteLine($"Added new input layer with index: {_selectedInputLayer.Index}");
     }
 
     private void RemoveInputLayerButton_Click(object sender, RoutedEventArgs e)
@@ -152,27 +142,20 @@ public partial class InputEditorWindow : Window
             return;
         }
 
-        try
-        {
-            var i = _selectedInputLayer.Index;
-            _selectedAppLayer.InputLayers.RemoveAt(i);
+        var i = _selectedInputLayer.Index;
+        _selectedAppLayer.InputLayers.RemoveAt(i);
 
-            // Re-index remaining layers
-            if (_selectedAppLayer.InputLayers.Count > 1)
-            {
-                for (int ii = i; ii < _selectedAppLayer.InputLayers.Count; ii++)
-                    _selectedAppLayer.InputLayers[ii].Index = ii;
-            }
-            SelectInputLayer(_selectedAppLayer.InputLayers[i == _selectedAppLayer.InputLayers.Count ? i - 1 : i]);
-
-            Trace.WriteLine($"Removed input layer at index: {i}");
-        }
-        catch (Exception ex)
+        // Re-index remaining layers
+        if (_selectedAppLayer.InputLayers.Count > 1)
         {
-            Trace.WriteLine($"Failed to remove input layer: {ex.Message}");
-            MessageBox.Show($"Failed to remove input layer: {ex.Message}", "Error");
+            for (int ii = i; ii < _selectedAppLayer.InputLayers.Count; ii++)
+                _selectedAppLayer.InputLayers[ii].Index = ii;
         }
+        SelectInputLayer(_selectedAppLayer.InputLayers[i == _selectedAppLayer.InputLayers.Count ? i - 1 : i]);
+
+        Trace.WriteLine($"Removed input layer at index: {i}");
     }
+
 
     private void SelectAppLayer(AppLayer selectedAppLayer)
     {
@@ -189,7 +172,7 @@ public partial class InputEditorWindow : Window
         _selectedInputLayer = selectedInputLayer;
 
         LayerButtonText.Text = $"Layer: {_selectedInputLayer.Index}";
-
+        
         InputsItemsControl.ItemsSource = _selectedInputLayer.Inputs;
     }
 
@@ -198,6 +181,44 @@ public partial class InputEditorWindow : Window
         var newInput = new Input();
 
         _selectedInputLayer.Inputs.Add(newInput);
+    }
+
+    private int GetIndex(RoutedEventArgs e)
+    {
+        //Try to get FrameworkElement from UserControl (if that makes sense)
+        FrameworkElement fe = e.OriginalSource as FrameworkElement;
+        if (fe == null)
+            return -1;
+
+        //Get Input from FrameworkElement's DataContext
+        var item = fe.DataContext as Input;
+        if (item == null)
+            return -1;
+
+        //Get the index
+        return _selectedInputLayer.Inputs.IndexOf(item);
+    }
+
+    private void InputInfoUctrl_MoveUpInput(object sender, RoutedEventArgs e)
+    {
+        var index = GetIndex(e);
+        if (index == 0)
+            return;
+        _selectedInputLayer.Inputs.Move(index, index - 1);
+    }
+
+    private void InputInfoUctrl_MoveDownInput(object sender, RoutedEventArgs e)
+    {
+        var index = GetIndex(e);
+        if (index == _selectedInputLayer.Inputs.Count - 1)
+            return;
+        _selectedInputLayer.Inputs.Move(index, index + 1);
+    }
+
+    private void InputInfoUctrl_RemoveInput(object sender, RoutedEventArgs e)
+    {
+        var index = GetIndex(e);
+        _selectedInputLayer.Inputs.RemoveAt(index);
     }
 
     private ImageSource ExtractIconFromFile(string filePath)
@@ -216,19 +237,51 @@ public partial class InputEditorWindow : Window
         return null;
     }
 
-    private void ConnectButton_Copy1_Click(object sender, RoutedEventArgs e)
-    {
+    private void SaveButton_Click(object sender, RoutedEventArgs e) =>
+        _inputController.SaveFile();
 
+    private void SaveAsButton_Click(object sender, RoutedEventArgs e)
+    {
+        var openDialog = new SaveFileDialog
+        {
+            Filter = "JSON file (*.json)|*.json|All Files (*.*)|*.*",
+            Title = "Select save location"
+        };
+
+        if (openDialog.ShowDialog() == true)
+            _inputController.SaveFile(openDialog.FileName);
     }
 
-    private void CancelButton_Click(object sender, RoutedEventArgs e)
+    private void LoadButton_Click(object sender, RoutedEventArgs e)
     {
+        var openDialog = new OpenFileDialog
+        {
+            Filter = "JSON file (*.json)|*.json|All Files (*.*)|*.*",
+            Title = "Select file"
+        };
+
+        if (openDialog.ShowDialog() == true)
+            _inputController.LoadFile(openDialog.FileName);
+
+        AppLayerItemsControl.ItemsSource = _inputController.AppLayerList;
+        SelectAppLayer(_inputController.AppLayerList[0]);
+    }
+
+    private void CancelButton_Click(object sender, RoutedEventArgs e) =>
         Close();
-    }
 
-    private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+
+    protected override void OnClosed(EventArgs e)
     {
+        while (_inputDataEditors.Count > 0)
+            _inputDataEditors[0].Close();
 
+        base.OnClosed(e);
     }
 
+    private void InputInfoUctrl_OpenInputDataEditor(InputDataEditorWindow obj) =>
+        _inputDataEditors.Add(obj);
+
+    private void InputInfoUctrl_CloseInputDataEditor(InputDataEditorWindow obj) =>
+        _inputDataEditors.Remove(obj);
 }

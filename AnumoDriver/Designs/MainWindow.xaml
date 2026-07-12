@@ -90,49 +90,86 @@
             </StackPanel>
 
             <!--Port selection and connect-->
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,0"/>
+            <StackPanel
+                Orientation="Horizontal"
+                VerticalAlignment="Center" 
+                HorizontalAlignment="Center"
+                Margin="0,0,0,0"
+            />
 
             <!--Buttons-->
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,10,0">
+            <StackPanel
+                Orientation="Horizontal"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Right"
+                Margin="0,10,10,0"
+            >
 
-                <Button x:Name="SetupButton" 
+                <Button
+                    x:Name="SetupButton" 
                     Style="{StaticResource RoundButtonStyle}"
                     Content="🅰"
                     Click="SetupButton_Click"
                     ToolTip="Open setup window"
-                    Margin="0,0,10,0" Cursor="Hand"/>
+                    Margin="0,0,10,0"
+                    Cursor="Hand"
+                />
 
-                <Button x:Name="PinButton" 
+                <Button
+                    x:Name="PinButton" 
                     Style="{StaticResource RoundButtonStyle}"
                     Content="📌"
                     Click="PinButton_Click"
                     ToolTip="Toggle window pin"
-                    Margin="0,0,10,0" Cursor="Hand"/>
+                    Margin="0,0,10,0"
+                    Cursor="Hand"
+                />
 
-                <Button x:Name="CloseButton" 
+                <Button
+                    x:Name="CloseButton" 
                     Style="{StaticResource RoundButtonStyle}"
                     Content="✕"
                     Click="CloseButton_Click"
-                    ToolTip="Close application" Cursor="Hand"/>
+                    ToolTip="Close application"
+                    Cursor="Hand"
+                />
 
             </StackPanel>
-            <ComboBox x:Name="PortComboBox"
-                        BorderBrush="#FF868383"
-                        Margin="10,10,0,0" Height="24" VerticalAlignment="Top" HorizontalAlignment="Left" Width="80"
-                        />
-            <Button x:Name="ConnectButton" 
-                    Content="Connect"
-                    Background="#FF868383"
-                    Foreground="White"
-                    Click="ConnectButton_Click"
-                    ToolTip="Connect to selected port"
-                    Margin="102,10,0,0"
-                    Cursor="Hand" Height="24" VerticalAlignment="Top" HorizontalAlignment="Left" Width="70"/>
-            <TextBlock x:Name="DeviceNameText" 
-                        Text="No device" 
-                        Foreground="White" 
-                        FontSize="12" 
-                        VerticalAlignment="Top" Margin="10,39,0,0" HorizontalAlignment="Left" Width="184"/>
+            
+            <ComboBox
+                x:Name="PortComboBox"
+                BorderBrush="#FF868383"
+                Margin="10,10,0,0"
+                Height="24"
+                Width="80"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                DropDownOpened="PortComboBox_DropDownOpened"
+            />
+            <Button
+                x:Name="ConnectButton" 
+                Content="Connect"
+                Background="#FF868383"
+                Foreground="White"
+                Click="ConnectButton_Click"
+                ToolTip="Connect to selected port"
+                Margin="102,10,0,0"
+                Cursor="Hand"
+                Height="24"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Width="70"
+            />
+            <TextBlock
+                x:Name="DeviceNameText" 
+                Text="No device" 
+                Foreground="White" 
+                FontSize="12" 
+                VerticalAlignment="Top"
+                Margin="10,39,0,0"
+                HorizontalAlignment="Left"
+                Width="184"
+            />
         </Grid>
 
         <TextBox x:Name="InputDataTextBox" Grid.Row="1" Margin="10,6,10,60" IsReadOnly="True"/>

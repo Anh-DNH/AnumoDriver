@@ -48,73 +48,7 @@
             VerticalAlignment="Top"
             Click="ClearButton_Click"
         />
-        <!--
-        <ScrollViewer
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Disabled"
-            Margin="0,33,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Width="426"
-            Height="200"
-        >
-            <ItemsControl x:Name="VirtualKeyItemsControl" >
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-
-                            <Button
-                                x:Name="MoveInputUpButton" 
-                                Content="↑"
-                                Background="#FF868383"
-                                Foreground="White"
-                                ToolTip="Move key up"
-                                Cursor="Hand"
-                                Width="24"
-                                Height="24"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top"
-                            />
-                            <Button
-                                x:Name="MoveInputDownButton" 
-                                Content="↓"
-                                Background="#FF868383"
-                                Foreground="White"
-                                ToolTip="Move key down"
-                                Cursor="Hand"
-                                Width="24"
-                                Height="24"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top"
-                            />
-                            <Button
-                                x:Name="RemoveInputButton" 
-                                Content="REMOVE"
-                                Background="#FF868383"
-                                Foreground="White"
-                                ToolTip="Remove key"
-                                Cursor="Hand"
-                                Width="72"
-                                Height="24"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Top"
-                            />
-                        </Grid>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-
-                <ItemsControl.ItemsPanel>
-
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left"/>
-                    </ItemsPanelTemplate>
-
-                </ItemsControl.ItemsPanel>
-
-            </ItemsControl>
-        </ScrollViewer>
-        -->
-
+        
         <ScrollViewer
             Margin="0,33,89,0"
             VerticalScrollBarVisibility="Auto"
@@ -122,7 +56,6 @@
         >
             <ItemsControl
                 x:Name="VirtualKeyItemsControl"
-                Tag="{Binding .}"
             >
 
                 <ItemsControl.ItemsPanel>

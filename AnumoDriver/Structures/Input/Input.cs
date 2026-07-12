@@ -1,7 +1,11 @@
 ﻿using AnumoDriver.Controllers;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AnumoDriver.Structures.INPUT;
 
+[JsonConverter(typeof(InputJsonConverter))]
 public class Input
 {
     public string Name { get; set; } = "New Input";
@@ -41,8 +45,8 @@ public class Input
 
     public InputSignal InputSignal { get; set; }
     public InputAction InputAction { get; set; }
-    public InputController InputController { get; private set; }
-    public Dictionary<string, object> Parameters { get; set; } = [];
+
+    //public Dictionary<string, object> Parameters { get; set; } = [];
 
     public Input()
     {
@@ -69,5 +73,93 @@ public class Input
             return;
 
         InputSignal.ProcessSignal(signalData);
+    }
+}
+
+public class InputJsonConverter : JsonConverter<Input>
+{
+
+#pragma warning disable CS8601 // Possible null reference assignment.
+    public override Input? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        using (JsonDocument doc = JsonDocument.ParseValue(ref reader))
+        {
+            var root = doc.RootElement;
+            var input = new Input();
+
+            if (root.TryGetProperty("Name", out var nameElement))
+                input.Name = nameElement.ToString();
+
+            if (root.TryGetProperty("SignalType", out var sTypeElement))
+                input.SignalType = (InputSignal.Type)sTypeElement.GetInt32();
+
+            if (root.TryGetProperty("ActionType", out var aTypeElement))
+                input.ActionType = (InputAction.Type)aTypeElement.GetInt32();
+
+            if (root.TryGetProperty("InputSignal", out var iSignalElement))
+            {
+                string productJson = iSignalElement.GetRawText();
+
+                input.InputSignal = input.SignalType switch
+                {
+                    InputSignal.Type.Key => JsonSerializer.Deserialize<InputSignal_Key>(productJson, options),
+                    InputSignal.Type.Rotary => JsonSerializer.Deserialize<InputSignal_Rotary>(productJson, options),
+                    _ => throw new JsonException("Unknown InputSignal type occured")
+                };
+            }
+
+            if (root.TryGetProperty("InputAction", out var iActionElement))
+            {
+                string productJson = iActionElement.GetRawText();
+
+                input.InputAction = input.ActionType switch
+                {
+                    InputAction.Type.SimulateKeyboardKeys => JsonSerializer.Deserialize<InputAction_SimulateKeyboardKeys>(productJson, options),
+                    InputAction.Type.ClickMouseButton => JsonSerializer.Deserialize<InputAction_ClickMouseButton>(productJson, options),
+                    InputAction.Type.RollMouseWheel => JsonSerializer.Deserialize<InputAction_RollMouseWheel>(productJson, options),
+                    InputAction.Type.ChangeLayer => JsonSerializer.Deserialize<InputAction_ChangeLayer>(productJson, options),
+                    InputAction.Type.WriteText => JsonSerializer.Deserialize<InputAction_WriteText>(productJson, options),
+                    _ => throw new JsonException("Unknown InputAction type occured")
+                };
+            }
+
+            return input;
+        }
+    }
+#pragma warning restore CS8601 // Possible null reference assignment.
+
+    public override void Write(Utf8JsonWriter writer, Input value, JsonSerializerOptions options)
+    {
+        writer.WriteStartObject();
+
+        writer.WriteString("Name", value.Name);
+        writer.WriteNumber("SignalType", (int)value.SignalType);
+        writer.WriteNumber("ActionType", (int)value.ActionType);
+
+        writer.WritePropertyName("InputSignal");
+        writer.WriteRawValue(
+            value.SignalType switch
+            {
+                InputSignal.Type.Key => JsonSerializer.Serialize((InputSignal_Key)value.InputSignal, options),
+                InputSignal.Type.Rotary => JsonSerializer.Serialize((InputSignal_Rotary)value.InputSignal, options),
+                _ => throw new JsonException("Unknown InputSignal type occured")
+            }
+        );
+
+        writer.WritePropertyName("InputAction");
+        writer.WriteRawValue(
+            value.ActionType switch
+            {
+                InputAction.Type.SimulateKeyboardKeys => JsonSerializer.Serialize((InputAction_SimulateKeyboardKeys)value.InputAction, options),
+                InputAction.Type.ClickMouseButton => JsonSerializer.Serialize((InputAction_ClickMouseButton)value.InputAction, options),
+                InputAction.Type.RollMouseWheel => JsonSerializer.Serialize((InputAction_RollMouseWheel)value.InputAction, options),
+                InputAction.Type.ChangeLayer => JsonSerializer.Serialize((InputAction_ChangeLayer)value.InputAction, options),
+                InputAction.Type.WriteText => JsonSerializer.Serialize((InputAction_WriteText)value.InputAction, options),
+                _ => throw new JsonException("Unknown InputAction type occured")
+            }
+        );
+
+        writer.WriteEndObject();
+        //writer.WriteStringValue(value.Name);
     }
 }

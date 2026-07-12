@@ -1,4 +1,6 @@
-﻿namespace AnumoDriver.Structures.INPUT;
+﻿using System.Text.Json.Serialization;
+
+namespace AnumoDriver.Structures.INPUT;
 
 public class InputAction
 {
@@ -10,10 +12,11 @@ public class InputAction
         ClickMouseButton,
         RollMouseWheel,
 
-        WriteText,
-        ChangeLayer
+        ChangeLayer,
+        WriteText
     }
 
+    [JsonIgnore]
     public Input Input { get; set; }
 
     public InputAction(Input input)

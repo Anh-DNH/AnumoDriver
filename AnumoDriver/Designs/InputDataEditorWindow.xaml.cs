@@ -28,16 +28,15 @@ public partial class InputDataEditorWindow : Window
         _input = DataContext as Input;
 
         // Initialize enum collections
-        EnumToStringConverter converter = new();
         var enumNames = Enum.GetNames(typeof(InputSignal.Type));
         foreach (var enumName in enumNames)
         {
-            SignalTypes.Add((string)converter.Convert(enumName, null, null, null));
+            SignalTypes.Add(EnumToStringConverter.Convert(enumName));
         }
         enumNames = Enum.GetNames(typeof(InputAction.Type));
         foreach (var enumName in enumNames)
         {
-            ActionTypes.Add((string)converter.Convert(enumName, null, null, null));
+            ActionTypes.Add(EnumToStringConverter.Convert(enumName));
         }
 
         InputSignalComboBox.ItemsSource = SignalTypes;

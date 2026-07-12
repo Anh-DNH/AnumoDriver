@@ -20,7 +20,8 @@ public partial class MainWindow : Window
 
     //For getting app name & icons
     private DispatcherTimer _dispatcherTimer;
-    private DispatcherTimer _dispatcherTimer2;
+
+    private InputEditorWindow _iEditorWindow;
 
     private bool _isWindowPinned = false;
     //SerialPort serialPort;
@@ -129,8 +130,19 @@ public partial class MainWindow : Window
     
     private void SetupButton_Click(object sender, RoutedEventArgs e)
     {
-        InputEditorWindow iEditorWindow = new(_inputController);
-        iEditorWindow.Show();
+        if (_iEditorWindow == null)
+        {
+            _iEditorWindow = new(_inputController);
+            _iEditorWindow.Closed += (e, i) =>
+            {
+                _iEditorWindow = null;
+            };
+            _iEditorWindow.Show();
+        }
+        else
+        {
+            _iEditorWindow.Focus();
+        }
     }
 
     private async void ConnectButton_Click(object sender, RoutedEventArgs e)
@@ -192,6 +204,9 @@ public partial class MainWindow : Window
     private void CloseButton_Click(object sender, RoutedEventArgs e)
     {
         _communicator.Disconnect();
+
+        _iEditorWindow.Close();
+
         Close();
     }
 
@@ -202,5 +217,9 @@ public partial class MainWindow : Window
         _dispatcherTimer?.Stop();
         _communicator.Disconnect();
         _communicator?.Dispose();
+        base.OnClosed(e);
     }
+
+    private void PortComboBox_DropDownOpened(object sender, EventArgs e) =>
+        RefreshPortList();
 }

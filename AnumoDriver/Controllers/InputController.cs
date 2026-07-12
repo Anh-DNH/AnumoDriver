@@ -16,55 +16,109 @@ public class InputController : INotifyPropertyChanged
     public enum InputType
     {
         Key,
-        RotaryEncoder,
-        //Joystick
+        RotaryEncoder
     }
-
-    private ObservableCollection<AppLayer> _appLayerList;
 
     public ObservableCollection<AppLayer> AppLayerList
     {
         get => _appLayerList;
         private set => SetProperty(ref _appLayerList, value);
     }
-
-    private AppLayer _currentAppLayer;
+    private ObservableCollection<AppLayer> _appLayerList;
 
     public AppLayer CurrentAppLayer
     {
         get => _currentAppLayer;
         private set => SetProperty(ref _currentAppLayer, value);
     }
+    private AppLayer _currentAppLayer;
 
     public InputLayer? CurrentInputLayer =>
         CurrentAppLayer?.InputLayers.Count > 0 ? CurrentAppLayer.InputLayers[CurrentAppLayer.InputLayerIndex] : null;
 
     public int InputLayerCount => CurrentAppLayer?.InputLayers.Count ?? 0;
 
-    private string _fileLocation = "";
+    public string FileLocation { get; private set; }
+    private string _localAppDataPath;
+
+    private class InternalSaveFile
+    {
+        public string CurrentSetFilePath { get; set; }
+    }
+
+    private InternalSaveFile _internalSaveFile = new();
 
     public InputController()
     {
         AppLayerList = new ObservableCollection<AppLayer>();
 
-        // Initialize file location to %localappdata%/AnumoDriver/set.json
-        string appName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
-        string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        _fileLocation = Path.Combine(localAppData, appName, "set.json");
+        // %localappdata%/AnumoDriver/
+        _localAppDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            System.Reflection.Assembly.GetExecutingAssembly().GetName().Name
+        );
 
-        if (File.Exists(_fileLocation))
-            LoadFile();
+        var internalFpath = Path.Combine(_localAppDataPath, "internal");
+        var defaultSetPath = Path.Combine(_localAppDataPath, "default_set.json");
+
+
+        //Load internal file to get the location of the currently using savefile
+        if (File.Exists(internalFpath))
+        {
+            var raw = File.ReadAllText(internalFpath);
+            _internalSaveFile = JsonSerializer.Deserialize<InternalSaveFile>(raw);
+
+            FileLocation = _internalSaveFile.CurrentSetFilePath;
+            if (!File.Exists(FileLocation))
+            {
+                FileLocation = defaultSetPath;
+                _internalSaveFile.CurrentSetFilePath = FileLocation;
+            }
+        }
+        //If the internal file doesn't exist, use the savefile inside %localappdata%
         else
+        {
+            FileLocation = defaultSetPath;
+            _internalSaveFile.CurrentSetFilePath = FileLocation;
+        }
+
+
+        if (File.Exists(FileLocation))
+            LoadFile(FileLocation);
+        else //If somehow the savefile inside %localappdata% doesn't exist, we setup defaultly
             SetupDefault();
+
+        ////Debug
+        //foreach (var appLayer in AppLayerList)
+        //{
+        //    Trace.WriteLine(appLayer.Name);
+        //    foreach (var inputLayer in appLayer.InputLayers)
+        //    {
+        //        Trace.WriteLine($"\t- Input Layer {inputLayer.Index}");
+        //        foreach (var input in inputLayer.Inputs)
+        //            Trace.WriteLine($"\t\t+ {input.Name}");
+        //    }
+        //}
     }
 
     /// <summary>
     /// If no configuration file is found, this method will set up a default layout with one AppLayer and four InputLayer,
     /// along with predefined Inputs and their associated signals and actions.
     /// </summary>
-    public void SetupDefault()
+    private void SetupDefault()
     {
-        var defAppLayer = new AppLayer("Default", "")
+        var def = GetDefaultAppLayer();
+        AppLayerList = [def];
+        CurrentAppLayer = def;
+
+        FileLocation = Path.Combine(_localAppDataPath, "default_set.json");
+
+        SaveFile();
+    }
+
+    private AppLayer GetDefaultAppLayer()
+    {
+        var defAppLayer = new AppLayer("common", "")
         {
             IconImage = new BitmapImage(new Uri("pack://application:,,,/AnumoDriver;component/Resources/default.png")),
         };
@@ -610,15 +664,18 @@ public class InputController : INotifyPropertyChanged
             //  --  --  --  --  --  --  --  --  --  --  --  --  --  //
 
             new Input {
-                Name = "HELLO ABYSS"
+                Name = "HELLO ABYSS",
+                ActionType = InputAction.Type.WriteText
             },
 
             new Input {
-                Name = "ABC DEF GHI"
+                Name = "ABC DEF GHI",
+                ActionType = InputAction.Type.WriteText
             },
 
             new Input {
-                Name = "NERV"
+                Name = "NERV",
+                ActionType = InputAction.Type.WriteText
             },
 
             //  --  --  --  --  --  --  --  --  --  --  --  --  --  //
@@ -747,41 +804,47 @@ public class InputController : INotifyPropertyChanged
         };
         #endregion
 
-        AppLayerList = [defAppLayer];
-        CurrentAppLayer = defAppLayer;
+        return defAppLayer;
     }
 
     /// <summary>
     /// Load data from a local saved json file and apply it into AppLayerList;
     /// </summary>
-    public void LoadFile()
+    public void LoadFile(string fileLocation)
     {
-        try
+        if (!string.IsNullOrEmpty(fileLocation))
         {
-            if (string.IsNullOrEmpty(_fileLocation) || !File.Exists(_fileLocation))
+            FileLocation = fileLocation;
+            _internalSaveFile.CurrentSetFilePath = FileLocation;
+        }
+
+        File.WriteAllText(
+            Path.Combine(_localAppDataPath, "internal"),
+            JsonSerializer.Serialize(_internalSaveFile)
+        );
+
+        /**************************************************************/
+
+        string jsonContent = File.ReadAllText(FileLocation);
+        AppLayerList = JsonSerializer.Deserialize<ObservableCollection<AppLayer>>(jsonContent) ?? [GetDefaultAppLayer()];
+
+        if (AppLayerList.Count > 0)
+        {
+            if (AppLayerList[0].Name != "common")
             {
-                Trace.WriteLine($"File not found: {_fileLocation}. We start with default setup!");
-                SetupDefault();
-                return;
+                Trace.WriteLine($"File loaded successfully but the default set is missing or malformed! Inserting default");
+                AppLayerList.Insert(0, GetDefaultAppLayer());
             }
 
-            string jsonContent = File.ReadAllText(_fileLocation);
-            var loadedLayers = JsonSerializer.Deserialize<List<AppLayer>>(jsonContent) ?? [];
-
-            AppLayerList = new ObservableCollection<AppLayer>(loadedLayers);
-
-            if (AppLayerList.Count > 0)
-            {
-                CurrentAppLayer = AppLayerList[0];
-            }
-
-            Trace.WriteLine($"Successfully loaded configuration from: {_fileLocation}");
+            CurrentAppLayer = AppLayerList[0];
         }
-        catch (Exception ex)
+        else
         {
-            Trace.WriteLine($"Error loading file: {ex.Message}");
-            AppLayerList = new ObservableCollection<AppLayer>();
+            Trace.WriteLine($"File loaded successfully but data is empty! Using default set!");
+            SetupDefault();
         }
+
+        Trace.WriteLine($"Successfully loaded configuration from: {FileLocation}");
     }
 
     /// <summary>
@@ -789,33 +852,41 @@ public class InputController : INotifyPropertyChanged
     /// </summary>
     public void SaveFile()
     {
-        try
+        File.WriteAllText(
+            Path.Combine(_localAppDataPath, "internal"),
+            JsonSerializer.Serialize(_internalSaveFile)
+        );
+
+        /**************************************************************/
+
+        string directory = Path.GetDirectoryName(FileLocation);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            Directory.CreateDirectory(directory);
+
+        var options = new JsonSerializerOptions
         {
-            if (string.IsNullOrEmpty(_fileLocation))
-            {
-                Trace.WriteLine("File location not set. Cannot save file.");
-                return;
-            }
+            WriteIndented = true
+        };
+        string jsonContent = JsonSerializer.Serialize(AppLayerList, options);
+        //string jsonContent = JsonSerializer.Serialize(AppLayerList);
+        File.WriteAllText(FileLocation, jsonContent);
 
-            string directory = Path.GetDirectoryName(_fileLocation);
-            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-            string jsonContent = JsonSerializer.Serialize(AppLayerList, options);
-            File.WriteAllText(_fileLocation, jsonContent);
-
-            Trace.WriteLine($"Successfully saved configuration to: {_fileLocation}");
-        }
-        catch (Exception ex)
+        Trace.WriteLine($"Successfully saved configuration to: {FileLocation}");
+    }
+    
+    /// <summary>
+    /// Save AppLayerList data into a json file specified by file's location.
+    /// The filepath will be saved for later saving process
+    /// </summary>
+    public void SaveFile(string fileLocation)
+    {
+        if (!string.IsNullOrEmpty(fileLocation))
         {
-            Trace.WriteLine($"Error saving file: {ex.Message}");
+            FileLocation = fileLocation;
+            _internalSaveFile.CurrentSetFilePath = FileLocation;
         }
+
+        SaveFile();
     }
 
     /// <summary>
@@ -829,12 +900,13 @@ public class InputController : INotifyPropertyChanged
             CurrentAppLayer = a;
         }
         else
-        {
-            //Trace.WriteLine($"AppLayer {name} not found in AppLayerList, use default layer");
             CurrentAppLayer = AppLayerList[0];
-        }
     }
 
+    /// <summary>
+    /// Switch to another InputLayer base on index
+    /// </summary>
+    /// <param name="index"></param>
     public void ChangeInputLayer(int index)
     {
         if (CurrentAppLayer == null)
@@ -876,6 +948,7 @@ public class InputController : INotifyPropertyChanged
         }
     }
 
+    #region INotifyPropertyChanged stuff
     public event PropertyChangedEventHandler PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -892,4 +965,7 @@ public class InputController : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
+    #endregion
 }
+
+

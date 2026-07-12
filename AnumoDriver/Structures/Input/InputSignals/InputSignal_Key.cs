@@ -5,7 +5,7 @@ namespace AnumoDriver.Structures.INPUT;
 
 public class InputSignal_Key : InputSignal
 {
-    public override string Title => "PRESS A KEY";
+    //public override string Title => "PRESS A KEY";
     public enum PressType
     {
         /// <summary>
@@ -56,7 +56,6 @@ public class InputSignal_Key : InputSignal
 
     [JsonIgnore]
     private int _invokeDelayer = 0;
-
     [JsonIgnore]
     private bool _toggleState = false;
 

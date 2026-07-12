@@ -1,8 +1,6 @@
 ﻿using AnumoDriver.Structures.INPUT;
 using AnumoDriver.Utilities;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 
 namespace AnumoDriver.Designs.UserControls;
@@ -31,7 +29,7 @@ public partial class InputAction_SimulateKeyboardKeys_Uctrl : UserControl
 
     private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
     {
-        _inputAction = DataContext as InputAction_SimulateKeyboardKeys;
+        _inputAction = (InputAction_SimulateKeyboardKeys)DataContext;
         _keyNames = [..Enum.GetNames(typeof(VirtualKeyCode))];
 
         _keyDataList = [];
@@ -125,6 +123,7 @@ public partial class InputAction_SimulateKeyboardKeys_Uctrl : UserControl
 
     private void ClearButton_Click(object sender, System.Windows.RoutedEventArgs e)
     {
-
+        _inputAction.Keys.Clear();
+        _keyDataList.Clear();
     }
 }

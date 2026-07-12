@@ -14,9 +14,9 @@ public class InputSignal_Rotary : InputSignal
     public RollType RotaryRollType { get; set; }
     public override void ProcessSignal(byte[] signalData)
     {
-        //var getIndex = signalData[0] >> 4;
-        //if (getIndex != RotaryIndex)
-        //    return;
+        var getIndex = signalData[0] >> 4;
+        if (getIndex != RotaryIndex)
+            return;
         if ((RollType)signalData[1] == RotaryRollType)
             InputAction?.Invoke();
     }

@@ -11,9 +11,12 @@ public class InputSignal
         Rotary
     }
 
-    public virtual string Title { get; }
+    //public virtual string Title { get; }
 
+    [JsonIgnore]
     public Input Input { get; set; }
+
+    [JsonIgnore]
     private protected InputAction? InputAction => Input?.InputAction;
 
     //public bool BlockNextInput { get; set; } = false;

@@ -7,13 +7,12 @@ namespace AnumoDriver;
 
 public class InputLayer : INotifyPropertyChanged
 {
-    private int _index;
-
     public int Index
     {
         get => _index;
         set => SetProperty(ref _index, value);
     }
+    private int _index;
 
     public ObservableCollection<Input> Inputs { get; set; }
 
@@ -22,6 +21,9 @@ public class InputLayer : INotifyPropertyChanged
         Inputs = new ObservableCollection<Input>();
     }
 
+
+
+    #region INotifyPropertyChanged stuff
     public event PropertyChangedEventHandler PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -38,4 +40,5 @@ public class InputLayer : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
+    #endregion
 }

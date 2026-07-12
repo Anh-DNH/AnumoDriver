@@ -23,9 +23,8 @@ public partial class InputSignal_Rotary_Uctrl : UserControl
     {
         _inputSignal = DataContext as InputSignal_Rotary;
 
-        EnumToStringConverter converter = new();
         foreach (string rotateSide in Enum.GetNames(typeof(InputSignal_Rotary.RollType)))
-            _rotateSide.Add((string)converter.Convert(rotateSide, null, null, null));
+            _rotateSide.Add(EnumToStringConverter.Convert(rotateSide));
 
         RotateSideComboBox.ItemsSource = _rotateSide;
         RotateSideComboBox.SelectedIndex = (int)_inputSignal.RotaryRollType;

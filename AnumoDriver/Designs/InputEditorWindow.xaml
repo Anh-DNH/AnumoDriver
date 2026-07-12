@@ -132,7 +132,7 @@
             </ItemsControl.ItemsPanel>
 
         </ItemsControl>
-
+        
         <Image
             x:Name="AppIcon"
             Height="48"
@@ -271,14 +271,25 @@
                 x:Name="InputsItemsControl"
             >
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <uc:InputInfoUctrl/>
+                    <DataTemplate
+                        x:Name="InputsDataTemplate"
+                    >
+                        <uc:InputInfoUctrl
+                            OnMoveUp="InputInfoUctrl_MoveUpInput"
+                            OnMoveDown="InputInfoUctrl_MoveDownInput"
+                            OnRemove="InputInfoUctrl_RemoveInput"
+                            OpenInputDataEditor="InputInfoUctrl_OpenInputDataEditor"
+                            CloseInputDataEditor="InputInfoUctrl_CloseInputDataEditor"
+                        />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left"/>
+                        <StackPanel
+                            Orientation="Vertical"
+                            HorizontalAlignment="Left"
+                        />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
@@ -290,7 +301,7 @@
             Content="ADD NEW INPUT"
             Background="#FF868383"
             Foreground="White"
-            ToolTip="Add new input layer"
+            ToolTip="Add a new input"
             Margin="188,533,10,0"
             Cursor="Hand" Height="35"
             VerticalAlignment="Top" Grid.Column="1" Grid.Row="2" Click="AddInputButton_Click"
@@ -303,32 +314,23 @@
             Background="#FF868383"
             Foreground="White"
             
-            ToolTip="Connect to selected port"
+            ToolTip="Save the current data (apps, input layers, inputs, etc.) to local memory"
             Margin="270,18,22,0"
             Cursor="Hand" Height="24"
-            VerticalAlignment="Top" Grid.Column="1" Grid.Row="3"
+            VerticalAlignment="Top"
+            Grid.Column="1"
+            Grid.Row="3" Click="SaveButton_Click"
         />
         <Button
-            x:Name="SaveNewButton" 
-            Content="Save New"
+            x:Name="SaveAsButton" 
+            Content="Save As..."
             Background="#FF868383"
             Foreground="White"
             
-            ToolTip="Connect to selected port"
+            ToolTip="Save the current input data as new JSON file"
             Margin="172,18,97,0"
             Cursor="Hand" Height="24"
-            VerticalAlignment="Top" Grid.Column="1" Grid.Row="3"
-        />
-        <Button
-            x:Name="CancelButton" 
-            Content="Cancel"
-            Background="#FF868383"
-            Foreground="White"
-            
-            ToolTip="Connect to selected port"
-            Margin="22,18,270,0"
-            Cursor="Hand" Height="24"
-            VerticalAlignment="Top" Grid.Row="3" Click="CancelButton_Click"
+            VerticalAlignment="Top" Grid.Column="1" Grid.Row="3" Click="SaveAsButton_Click"
         />
         <Button
             x:Name="LoadButton" 
@@ -336,10 +338,21 @@
             Background="#FF868383"
             Foreground="White"
             
-            ToolTip="Connect to selected port"
+            ToolTip="Load a .JSON file and set stuff"
             Margin="73,18,219,0"
             Cursor="Hand" Height="24"
-            VerticalAlignment="Top" Grid.Column="1" Grid.Row="3"
+            VerticalAlignment="Top" Grid.Column="1" Grid.Row="3" Click="LoadButton_Click"
+        />
+        <Button
+            x:Name="CancelButton" 
+            Content="Cancel"
+            Background="#FF868383"
+            Foreground="White"
+            
+            ToolTip="Close this window without saving anything >:)"
+            Margin="22,18,270,0"
+            Cursor="Hand" Height="24"
+            VerticalAlignment="Top" Grid.Row="3" Click="CancelButton_Click"
         />
 
     </Grid>

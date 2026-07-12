@@ -32,11 +32,10 @@ public partial class InputSignal_Key_Uctrl : UserControl
             return;
 
         // Initialize enum collections
-        EnumToStringConverter converter = new();
         var enumNames = Enum.GetNames(typeof(InputSignal_Key.PressType));
         foreach (var enumName in enumNames)
         {
-            _keyTypes.Add((string)converter.Convert(enumName, null, null, null));
+            _keyTypes.Add(EnumToStringConverter.Convert(enumName));
         }
         KeyPressTypeComboBox.ItemsSource = _keyTypes;
         KeyPressTypeComboBox.SelectedIndex = (int)_inputSignal.KeyPressType;
