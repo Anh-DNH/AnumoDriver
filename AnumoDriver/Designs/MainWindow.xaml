@@ -29,8 +29,15 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid>
-                            <Ellipse Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}"/>
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Ellipse
+                                Fill="{TemplateBinding Background}"
+                                Stroke="{TemplateBinding BorderBrush}"
+                                StrokeThickness="{TemplateBinding BorderThickness}"
+                            />
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                            />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -78,14 +85,28 @@
             </Rectangle>
 
             <!--Name and icon of focusing app-->
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,65,0,0">
-                <Image x:Name="AppIcon" Width="20" Height="20" VerticalAlignment="Center" Margin="5,0,5,0"/>
-                <TextBlock x:Name="AppNameText" 
-                        Text="No app focused" 
-                        Foreground="White" 
-                        FontSize="12" 
-                        FontWeight="Bold" 
-                        VerticalAlignment="Center" Margin="5,0,5,0"/>
+            <StackPanel
+                Orientation="Horizontal"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                Margin="10,65,0,0"
+            >
+                <Image
+                    x:Name="AppIcon"
+                    Width="20"
+                    Height="20"
+                    VerticalAlignment="Center"
+                    Margin="5,0,5,0"
+                />
+                <TextBlock
+                    x:Name="AppNameText" 
+                    Text="No app focused" 
+                    Foreground="White" 
+                    FontSize="12" 
+                    FontWeight="Bold" 
+                    VerticalAlignment="Center"
+                    Margin="5,0,5,0"
+                />
                 <Separator Width="1" Background="#FF868383" Margin="5,0,5,0"/>
             </StackPanel>
 

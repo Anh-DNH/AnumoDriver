@@ -18,8 +18,12 @@ public partial class App : Application
         sc.AddSingleton<SerialCommunicator>();
         sc.AddSingleton<InputController>();
         sc.AddSingleton<AppFocusHandler>();
-        sc.AddSingleton<MainWindow>(); // register windows/pages you construct via DI
+        sc.AddSingleton<GlobalTick>();
+        sc.AddSingleton<MainWindow>(); // register windows/pages via DI
         _service = sc.BuildServiceProvider();
+
+        var tickService = _service.GetRequiredService<GlobalTick>();
+        tickService.Start();
 
         var main = _service.GetRequiredService<MainWindow>();
         main.Show();

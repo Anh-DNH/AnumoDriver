@@ -36,6 +36,7 @@ public partial class InputEditorWindow : Window
     }
 
 
+
     private void AppIcon_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is AppLayer selectedAppLayer)
@@ -107,6 +108,7 @@ public partial class InputEditorWindow : Window
     }
 
 
+
     private void InputLayer_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is InputLayer selectedInputLayer)
@@ -157,6 +159,7 @@ public partial class InputEditorWindow : Window
     }
 
 
+
     private void SelectAppLayer(AppLayer selectedAppLayer)
     {
         _selectedAppLayer = selectedAppLayer;
@@ -183,22 +186,6 @@ public partial class InputEditorWindow : Window
         _selectedInputLayer.Inputs.Add(newInput);
     }
 
-    private int GetIndex(RoutedEventArgs e)
-    {
-        //Try to get FrameworkElement from UserControl (if that makes sense)
-        FrameworkElement fe = e.OriginalSource as FrameworkElement;
-        if (fe == null)
-            return -1;
-
-        //Get Input from FrameworkElement's DataContext
-        var item = fe.DataContext as Input;
-        if (item == null)
-            return -1;
-
-        //Get the index
-        return _selectedInputLayer.Inputs.IndexOf(item);
-    }
-
     private void InputInfoUctrl_MoveUpInput(object sender, RoutedEventArgs e)
     {
         var index = GetIndex(e);
@@ -221,21 +208,11 @@ public partial class InputEditorWindow : Window
         _selectedInputLayer.Inputs.RemoveAt(index);
     }
 
-    private ImageSource ExtractIconFromFile(string filePath)
-    {
-        using (System.Drawing.Icon icon = System.Drawing.Icon.ExtractAssociatedIcon(filePath))
-        {
-            if (icon != null)
-            {
-                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                    icon.Handle,
-                    System.Windows.Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-            }
-        }
+    private void InputInfoUctrl_OpenInputDataEditor(InputDataEditorWindow obj) =>
+        _inputDataEditors.Add(obj);
 
-        return null;
-    }
+    private void InputInfoUctrl_CloseInputDataEditor(InputDataEditorWindow obj) =>
+        _inputDataEditors.Remove(obj);
 
     private void SaveButton_Click(object sender, RoutedEventArgs e) =>
         _inputController.SaveFile();
@@ -271,6 +248,39 @@ public partial class InputEditorWindow : Window
         Close();
 
 
+
+    private ImageSource ExtractIconFromFile(string filePath)
+    {
+        using (System.Drawing.Icon icon = System.Drawing.Icon.ExtractAssociatedIcon(filePath))
+        {
+            if (icon != null)
+            {
+                return System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
+                    icon.Handle,
+                    System.Windows.Int32Rect.Empty,
+                    BitmapSizeOptions.FromEmptyOptions());
+            }
+        }
+
+        return null;
+    }
+
+    private int GetIndex(RoutedEventArgs e)
+    {
+        //Try to get FrameworkElement from UserControl (if that makes sense)
+        FrameworkElement fe = e.OriginalSource as FrameworkElement;
+        if (fe == null)
+            return -1;
+
+        //Get Input from FrameworkElement's DataContext
+        var item = fe.DataContext as Input;
+        if (item == null)
+            return -1;
+
+        //Get the index
+        return _selectedInputLayer.Inputs.IndexOf(item);
+    }
+
     protected override void OnClosed(EventArgs e)
     {
         while (_inputDataEditors.Count > 0)
@@ -279,9 +289,4 @@ public partial class InputEditorWindow : Window
         base.OnClosed(e);
     }
 
-    private void InputInfoUctrl_OpenInputDataEditor(InputDataEditorWindow obj) =>
-        _inputDataEditors.Add(obj);
-
-    private void InputInfoUctrl_CloseInputDataEditor(InputDataEditorWindow obj) =>
-        _inputDataEditors.Remove(obj);
 }

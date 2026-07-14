@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace AnumoDriver;
 
@@ -17,22 +16,19 @@ public partial class MainWindow : Window
     private readonly SerialCommunicator _communicator;
     private readonly InputController _inputController;
     private readonly AppFocusHandler _appFocusHandler;
+    private readonly GlobalTick _globalTick;
 
-    //For getting app name & icons
-    private DispatcherTimer _dispatcherTimer;
 
     private InputEditorWindow _iEditorWindow;
 
     private bool _isWindowPinned = false;
-    //SerialPort serialPort;
 
-    private int _currentFocusingAppId = 0;
-
-    public MainWindow(SerialCommunicator connector, InputController inputManager, AppFocusHandler appMonitor)
+    public MainWindow(SerialCommunicator connector, InputController inputManager, AppFocusHandler appMonitor, GlobalTick globalTick)
     {
         _communicator = connector;
         _inputController = inputManager;
         _appFocusHandler = appMonitor;
+        _globalTick = globalTick;
 
         InitializeComponent();
     }
@@ -41,7 +37,12 @@ public partial class MainWindow : Window
     {
         Trace.WriteLine("Starting up the app!");
         RefreshPortList();
-        StartDispatcherTimer();
+
+        _communicator.OnReceiveInputData += GetIncomingInputData;
+        _appFocusHandler.OnFocusingOnAnApp += ChangingFocusingAppData;
+        ChangingFocusingAppData();
+
+        _globalTick.OnTick += _inputController.Loop;
     }
 
     private void RefreshPortList()
@@ -52,35 +53,11 @@ public partial class MainWindow : Window
             PortComboBox.SelectedIndex = 0;
     }
 
-    /// <summary>
-    /// Run a timer to get focusing app, input from controller board, etc.
-    /// </summary>
-    public void StartDispatcherTimer()
+    private void GetIncomingInputData(byte[] inputData) =>
+        _inputController.GetInput(inputData);
+
+    private void ChangingFocusingAppData()
     {
-        _dispatcherTimer = new DispatcherTimer();
-
-        _dispatcherTimer.Tick += (s, e) =>
-        {
-            TickMonitorApp();
-            TickInputData();
-        };
-        _dispatcherTimer.Start();
-
-        //_dispatcherTimer2 = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(0.25) };
-        //_dispatcherTimer2.Tick += (s, e) =>
-        //{
-        //    TickMonitorApp();
-        //};
-        //_dispatcherTimer2.Start();
-    }
-
-    public void TickMonitorApp()
-    {
-        _appFocusHandler.GetFocusName();
-
-        if (_appFocusHandler.AppId == _currentFocusingAppId)
-            return;
-
         if (_appFocusHandler.AppName != _inputController.CurrentAppLayer.Name)
         {
             _inputController.ChangeAppLayer(_appFocusHandler.AppName);
@@ -88,46 +65,9 @@ public partial class MainWindow : Window
             AppNameText.Text = _inputController.CurrentAppLayer.Name;
             AppIcon.Source = _inputController.CurrentAppLayer.IconImage;
         }
-
-        //AppNameText.Text = _appFocusHandler.AppName;
-        //AppIcon.Source = _appFocusHandler.AppIcon;
-
-        _currentFocusingAppId = _appFocusHandler.AppId;
-    }
-
-    public void TickInputData()
-    {
-        // Check for input data from serial communicator
-        if (_communicator.ReceiveInputData(out byte[] data))
-        {
-            _inputController.GetInput(data);
-
-            // Format bytes as 8-bit binary strings
-            string displayText = string.Join(
-                ", ",
-                data.Select(b => Convert.ToString(b, 2).PadLeft(8, '0'))
-            ); 
-
-            InputDataTextBox.Text = $"[{DateTime.Now:HH:mm:ss.fff}] {displayText}";
-        }
-
-        _inputController.Loop();
-    }
-
-
-    /// <summary>
-    /// Drag and move window anywhere on screen
-    /// </summary>
-    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-    {
-        if (!_isWindowPinned)
-        {
-            DragMove();
-        }
     }
 
     #region Buttons
-    
     private void SetupButton_Click(object sender, RoutedEventArgs e)
     {
         if (_iEditorWindow == null)
@@ -205,21 +145,38 @@ public partial class MainWindow : Window
     {
         _communicator.Disconnect();
 
-        _iEditorWindow.Close();
+        _iEditorWindow?.Close();
 
         Close();
     }
 
     #endregion
 
-    protected override void OnClosed(EventArgs e)
+    /// <summary>
+    /// Drag and move window anywhere on screen
+    /// </summary>
+    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        _dispatcherTimer?.Stop();
-        _communicator.Disconnect();
-        _communicator?.Dispose();
-        base.OnClosed(e);
+        if (!_isWindowPinned)
+        {
+            DragMove();
+        }
     }
 
+    /// <summary>
+    /// Refresh port list everytime we open combo box to select
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void PortComboBox_DropDownOpened(object sender, EventArgs e) =>
         RefreshPortList();
+
+    protected override void OnClosed(EventArgs e)
+    {
+        //_dispatcherTimer?.Stop();
+        _communicator.Disconnect();
+        _appFocusHandler.Dispose();
+
+        base.OnClosed(e);
+    }
 }

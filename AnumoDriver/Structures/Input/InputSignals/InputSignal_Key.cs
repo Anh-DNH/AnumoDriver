@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using AnumoDriver.Controllers;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace AnumoDriver.Structures.INPUT;
@@ -107,7 +109,7 @@ public class InputSignal_Key : InputSignal
                         _pressClickCounter = 0;
                     }
 
-                    _pressClickDelay = 1100;
+                    _pressClickDelay = (int)GlobalTick.FrameRate;
                 }
                 return;
 
@@ -137,22 +139,15 @@ public class InputSignal_Key : InputSignal
                 _pressClickCounter = 0;
         }
 
-        _invokeDelayer -= _invokeDelayer < 0 ? -101 : 1;
-
         switch (KeyPressType)
         {
             case PressType.Hold:
                 if (_pressDown)
-                {
-                    if (_invokeDelayer == 0)
-                        InputAction?.Invoke();
-                }
-                //else
-                //    InputAction?.Reset();
+                    InputAction?.Invoke();
                 return;
 
             case PressType.TapHold:
-                if (_pressDownCounter == 1 || (_pressDownCounter >= 1700 && _invokeDelayer == 0))
+                if (_pressDownCounter == 1 || (_pressDownCounter >= (int)(GlobalTick.FrameRate / 2)))
                     InputAction?.Invoke();
                 return;
 
@@ -162,7 +157,6 @@ public class InputSignal_Key : InputSignal
                 return;
         }
     }
-
 
 }
 

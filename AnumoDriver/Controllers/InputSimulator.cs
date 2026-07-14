@@ -1,13 +1,7 @@
-using AnumoDriver.Structures.INPUT;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using AnumoDriver.Utilities;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Windows.Controls;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 
-namespace AnumoDriver.Utilities;
+namespace AnumoDriver.Structures;
 
 /// <summary>
 /// Handles Win32 API keyboard input simulation for key press, release, and hold operations.
@@ -15,14 +9,14 @@ namespace AnumoDriver.Utilities;
 public class InputSimulator : IDisposable
 {
     private const int INPUT_MOUSE = 0;
-    private const int INPUT_KEYBOARD = 1;
+    //private const int INPUT_KEYBOARD = 1;
 
     private const uint KEYEVENTF_KEYDOWN = 0x0000;
-    private const uint KEYEVENTF_KEYEXT = 0x0001;
+    //private const uint KEYEVENTF_KEYEXT = 0x0001;
     private const uint KEYEVENTF_KEYUP = 0x0002;
     private const uint KEYEVENTF_UNICODE = 0x0004;
 
-    private const uint MOUSEF_MOVE = 0x0001;
+    //private const uint MOUSEF_MOVE = 0x0001;
     private const uint MOUSEF_LEFTDW = 0x0002;
     private const uint MOUSEF_LEFTUP = 0x0004;
     private const uint MOUSEF_RIGHTDW = 0x0008;

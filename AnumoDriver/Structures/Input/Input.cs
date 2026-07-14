@@ -106,6 +106,7 @@ public class InputJsonConverter : JsonConverter<Input>
                     InputSignal.Type.Rotary => JsonSerializer.Deserialize<InputSignal_Rotary>(productJson, options),
                     _ => throw new JsonException("Unknown InputSignal type occured")
                 };
+                input.InputSignal.Input = input;
             }
 
             if (root.TryGetProperty("InputAction", out var iActionElement))
@@ -121,6 +122,7 @@ public class InputJsonConverter : JsonConverter<Input>
                     InputAction.Type.WriteText => JsonSerializer.Deserialize<InputAction_WriteText>(productJson, options),
                     _ => throw new JsonException("Unknown InputAction type occured")
                 };
+                input.InputAction.Input = input;
             }
 
             return input;

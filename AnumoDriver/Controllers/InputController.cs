@@ -13,12 +13,6 @@ namespace AnumoDriver.Controllers;
 
 public class InputController : INotifyPropertyChanged
 {
-    public enum InputType
-    {
-        Key,
-        RotaryEncoder
-    }
-
     public ObservableCollection<AppLayer> AppLayerList
     {
         get => _appLayerList;

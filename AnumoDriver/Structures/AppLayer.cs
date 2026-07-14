@@ -51,7 +51,6 @@ public class AppLayer : INotifyPropertyChanged
     public ObservableCollection<InputLayer> InputLayers { get; } = [];
 
     #region INotifyPropertyChanged stuff
-
     public event PropertyChangedEventHandler PropertyChanged;
 
     protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
