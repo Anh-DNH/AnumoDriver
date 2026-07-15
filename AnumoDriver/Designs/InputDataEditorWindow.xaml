@@ -15,10 +15,10 @@
     AllowsTransparency="True"
     Background="Transparent" Loaded="Window_Loaded"
 >
-    <Window.Resources>
-        <c:EnumToStringConverter x:Key="EnumToStringConverter"/>
-    </Window.Resources>
-    <Grid>
+    <Grid
+        x:Name="Background"
+        MouseLeftButtonDown="Background_MouseLeftButtonDown"
+    >
 
         <Grid.OpacityMask>
             <VisualBrush Visual="{Binding ElementName=Border1}" />

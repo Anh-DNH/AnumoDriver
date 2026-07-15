@@ -14,7 +14,10 @@
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
 >
-    <Grid>
+    <Grid
+        x:Name="Background"
+        MouseLeftButtonDown="Background_MouseLeftButtonDown"
+    >
         <Grid.OpacityMask>
             <VisualBrush Visual="{Binding ElementName=Border1}" />
         </Grid.OpacityMask>

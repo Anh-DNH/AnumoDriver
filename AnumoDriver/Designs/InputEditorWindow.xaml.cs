@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -289,4 +290,9 @@ public partial class InputEditorWindow : Window
         base.OnClosed(e);
     }
 
+    /// <summary>
+    /// Drag and move window anywhere on screen
+    /// </summary>
+    private void Background_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) =>
+        DragMove();
 }

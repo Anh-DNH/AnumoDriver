@@ -1,6 +1,4 @@
 ﻿using AnumoDriver.Controllers;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Text.Json.Serialization;
 
 namespace AnumoDriver.Structures.INPUT;

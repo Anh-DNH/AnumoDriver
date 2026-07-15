@@ -2,6 +2,8 @@
 using AnumoDriver.Designs;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -36,21 +38,25 @@ public partial class MainWindow : Window
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         Trace.WriteLine("Starting up the app!");
-        RefreshPortList();
+
+        var ports = _communicator.GetAvailablePorts();
+        PortComboBox.ItemsSource = ports;
+        if (ports.Length > 0)
+            PortComboBox.SelectedIndex = 0;
 
         _communicator.OnReceiveInputData += GetIncomingInputData;
         _appFocusHandler.OnFocusingOnAnApp += ChangingFocusingAppData;
         ChangingFocusingAppData();
 
-        _globalTick.OnTick += _inputController.Loop;
-    }
+        var binding = new Binding("InputLayerIndex")
+        {
+            //Mode = BindingMode.OneWay,
+            Source = _inputController.CurrentAppLayer
+        };
 
-    private void RefreshPortList()
-    {
-        var ports = _communicator.GetAvailablePorts();
-        PortComboBox.ItemsSource = ports;
-        if (ports.Length > 0)
-            PortComboBox.SelectedIndex = 0;
+        BindingOperations.SetBinding(LayerNumberText, TextBlock.TextProperty, binding);
+
+        _globalTick.OnTick += _inputController.Loop;
     }
 
     private void GetIncomingInputData(byte[] inputData) =>
@@ -58,32 +64,13 @@ public partial class MainWindow : Window
 
     private void ChangingFocusingAppData()
     {
-        if (_appFocusHandler.AppName != _inputController.CurrentAppLayer.Name)
-        {
-            _inputController.ChangeAppLayer(_appFocusHandler.AppName);
+        _inputController.ChangeAppLayer(_appFocusHandler.AppName);
 
-            AppNameText.Text = _inputController.CurrentAppLayer.Name;
-            AppIcon.Source = _inputController.CurrentAppLayer.IconImage;
-        }
+        AppNameText.Text = _inputController.CurrentAppLayer.Name;
+        AppIcon.Source = _inputController.CurrentAppLayer.IconImage;
     }
 
     #region Buttons
-    private void SetupButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_iEditorWindow == null)
-        {
-            _iEditorWindow = new(_inputController);
-            _iEditorWindow.Closed += (e, i) =>
-            {
-                _iEditorWindow = null;
-            };
-            _iEditorWindow.Show();
-        }
-        else
-        {
-            _iEditorWindow.Focus();
-        }
-    }
 
     private async void ConnectButton_Click(object sender, RoutedEventArgs e)
     {
@@ -125,22 +112,6 @@ public partial class MainWindow : Window
         }
     }
 
-    private void PinButton_Click(object sender, RoutedEventArgs e)
-    {
-        _isWindowPinned = !_isWindowPinned;
-
-        if (_isWindowPinned)
-        {
-            PinButton.Background = new SolidColorBrush(Color.FromRgb(128, 128, 128));
-            TitleBar.Cursor = Cursors.Arrow;
-        }
-        else
-        {
-            PinButton.Background = new SolidColorBrush(Colors.Transparent);
-            TitleBar.Cursor = Cursors.SizeAll;
-        }
-    }
-
     private void CloseButton_Click(object sender, RoutedEventArgs e)
     {
         _communicator.Disconnect();
@@ -149,18 +120,44 @@ public partial class MainWindow : Window
 
         Close();
     }
+    private void SetupButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_iEditorWindow == null)
+        {
+            _iEditorWindow = new(_inputController);
+            _iEditorWindow.Closed += (e, i) =>
+            {
+                _iEditorWindow = null;
+            };
+            _iEditorWindow.Show();
+        }
+        else
+        {
+            _iEditorWindow.Focus();
+        }
+    }
+
+    private void PinToggleButton_Click(object sender, RoutedEventArgs e)
+    {
+        _isWindowPinned = !_isWindowPinned;
+        PinToggleButton.IsChecked = _isWindowPinned;
+    }
+
+    private void TopMostToggleButton_Click(object sender, RoutedEventArgs e)
+    {
+        Topmost = !Topmost;
+        TopMostToggleButton.IsChecked = Topmost;
+    }
 
     #endregion
 
     /// <summary>
     /// Drag and move window anywhere on screen
     /// </summary>
-    private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    private void Background_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (!_isWindowPinned)
-        {
             DragMove();
-        }
     }
 
     /// <summary>
@@ -169,7 +166,7 @@ public partial class MainWindow : Window
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void PortComboBox_DropDownOpened(object sender, EventArgs e) =>
-        RefreshPortList();
+        PortComboBox.ItemsSource = _communicator.GetAvailablePorts();
 
     protected override void OnClosed(EventArgs e)
     {

@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace AnumoDriver.Designs;
 
@@ -109,4 +110,10 @@ public partial class InputDataEditorWindow : Window
         InputAction_WriteText actionText => new InputAction_WriteText_Uctrl { DataContext = actionText },
         _ => null
     };
+
+    /// <summary>
+    /// Drag and move window anywhere on screen
+    /// </summary>
+    private void Background_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) =>
+        DragMove();
 }
