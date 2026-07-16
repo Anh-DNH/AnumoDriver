@@ -33,47 +33,33 @@ public class InputController : INotifyPropertyChanged
     public int InputLayerCount => CurrentAppLayer?.InputLayers.Count ?? 0;
 
     public string FileLocation { get; private set; }
-    private string _localAppDataPath;
 
-    private class InternalSaveFile
+    private InternalSave _internalSave;
+
+    public InputController(InternalSave internalSave)
     {
-        public string CurrentSetFilePath { get; set; }
-    }
+        _internalSave = internalSave;
+        Trace.WriteLine("AAA: " + _internalSave.CurrentSetFilePath);
 
-    private InternalSaveFile _internalSaveFile = new();
+        AppLayerList = [];
 
-    public InputController()
-    {
-        AppLayerList = new ObservableCollection<AppLayer>();
-
-        // %localappdata%/AnumoDriver/
-        _localAppDataPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            System.Reflection.Assembly.GetExecutingAssembly().GetName().Name
-        );
-
-        var internalFpath = Path.Combine(_localAppDataPath, "internal");
-        var defaultSetPath = Path.Combine(_localAppDataPath, "default_set.json");
-
+        var defaultSetPath = Path.Combine(App.LocalDataFolder, "default_set.json");
 
         //Load internal file to get the location of the currently using savefile
-        if (File.Exists(internalFpath))
+        if (!string.IsNullOrEmpty(_internalSave.CurrentSetFilePath))
         {
-            var raw = File.ReadAllText(internalFpath);
-            _internalSaveFile = JsonSerializer.Deserialize<InternalSaveFile>(raw);
-
-            FileLocation = _internalSaveFile.CurrentSetFilePath;
+            FileLocation = _internalSave.CurrentSetFilePath;
             if (!File.Exists(FileLocation))
             {
                 FileLocation = defaultSetPath;
-                _internalSaveFile.CurrentSetFilePath = FileLocation;
+                _internalSave.CurrentSetFilePath = FileLocation;
             }
         }
         //If the internal file doesn't exist, use the savefile inside %localappdata%
         else
         {
             FileLocation = defaultSetPath;
-            _internalSaveFile.CurrentSetFilePath = FileLocation;
+            _internalSave.CurrentSetFilePath = FileLocation;
         }
 
 
@@ -105,7 +91,7 @@ public class InputController : INotifyPropertyChanged
         AppLayerList = [def];
         CurrentAppLayer = def;
 
-        FileLocation = Path.Combine(_localAppDataPath, "default_set.json");
+        FileLocation = Path.Combine(App.LocalDataFolder, "default_set.json");
 
         SaveFile();
     }
@@ -806,19 +792,6 @@ public class InputController : INotifyPropertyChanged
     /// </summary>
     public void LoadFile(string fileLocation)
     {
-        if (!string.IsNullOrEmpty(fileLocation))
-        {
-            FileLocation = fileLocation;
-            _internalSaveFile.CurrentSetFilePath = FileLocation;
-        }
-
-        File.WriteAllText(
-            Path.Combine(_localAppDataPath, "internal"),
-            JsonSerializer.Serialize(_internalSaveFile)
-        );
-
-        /**************************************************************/
-
         string jsonContent = File.ReadAllText(FileLocation);
         AppLayerList = JsonSerializer.Deserialize<ObservableCollection<AppLayer>>(jsonContent) ?? [GetDefaultAppLayer()];
 
@@ -846,13 +819,6 @@ public class InputController : INotifyPropertyChanged
     /// </summary>
     public void SaveFile()
     {
-        File.WriteAllText(
-            Path.Combine(_localAppDataPath, "internal"),
-            JsonSerializer.Serialize(_internalSaveFile)
-        );
-
-        /**************************************************************/
-
         string directory = Path.GetDirectoryName(FileLocation);
         if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             Directory.CreateDirectory(directory);
@@ -877,7 +843,7 @@ public class InputController : INotifyPropertyChanged
         if (!string.IsNullOrEmpty(fileLocation))
         {
             FileLocation = fileLocation;
-            _internalSaveFile.CurrentSetFilePath = FileLocation;
+            _internalSave.CurrentSetFilePath = FileLocation;
         }
 
         SaveFile();

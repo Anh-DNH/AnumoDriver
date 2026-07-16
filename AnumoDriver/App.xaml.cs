@@ -9,12 +9,20 @@ namespace AnumoDriver;
 /// </summary>
 public partial class App : Application
 {
+    public static string LocalDataFolder { get; set; }
+
     public static ServiceProvider? Service;
     private ServiceProvider _service { get; set; }
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        LocalDataFolder = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            System.Reflection.Assembly.GetExecutingAssembly().GetName().Name
+        );
+
         var sc = new ServiceCollection();
+        sc.AddSingleton<InternalSave>();
         sc.AddSingleton<SerialCommunicator>();
         sc.AddSingleton<InputController>();
         sc.AddSingleton<AppFocusHandler>();

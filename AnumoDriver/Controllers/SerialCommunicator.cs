@@ -35,6 +35,12 @@ public class SerialCommunicator : INotifyPropertyChanged
     private const byte COMMUTYPE_INPUT = 3;
     private const byte COMMUTYPE_MAX = 4;
 
+    private InternalSave _internalSave;
+
+    public SerialCommunicator(InternalSave internalSave)
+    {
+        _internalSave = internalSave;
+    }
 
     public string[] GetAvailablePorts() => SerialPort.GetPortNames();
 
@@ -155,6 +161,7 @@ public class SerialCommunicator : INotifyPropertyChanged
         {
             port.Write([COMMUTYPE_OHAYO], 0, 1);
             ActivePort = port;
+            _internalSave.CurrentSerialGate = port.PortName;
             ConnectStatus = ConnectionStatus.Connected;
 
             Trace.WriteLine($"SUCCESSFULLY CONNECTED TO DEVICE ON PORT {port.PortName}");
@@ -235,6 +242,7 @@ public class SerialCommunicator : INotifyPropertyChanged
         ActivePort.Close();
         ActivePort.Dispose();
         ActivePort = null;
+        _internalSave.CurrentSerialGate = "";
         ConnectStatus = ConnectionStatus.Disconnected;
     }
 

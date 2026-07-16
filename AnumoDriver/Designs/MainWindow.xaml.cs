@@ -19,18 +19,26 @@ public partial class MainWindow : Window
     private readonly InputController _inputController;
     private readonly AppFocusHandler _appFocusHandler;
     private readonly GlobalTick _globalTick;
+    private readonly InternalSave _interalSave;
 
 
     private InputEditorWindow _iEditorWindow;
 
     private bool _isWindowPinned = false;
 
-    public MainWindow(SerialCommunicator connector, InputController inputManager, AppFocusHandler appMonitor, GlobalTick globalTick)
+    public MainWindow(
+        SerialCommunicator connector,
+        InputController inputManager,
+        AppFocusHandler appMonitor,
+        GlobalTick globalTick,
+        InternalSave internalSave
+    )
     {
         _communicator = connector;
         _inputController = inputManager;
         _appFocusHandler = appMonitor;
         _globalTick = globalTick;
+        _interalSave = internalSave;
 
         InitializeComponent();
     }
@@ -41,7 +49,12 @@ public partial class MainWindow : Window
 
         var ports = _communicator.GetAvailablePorts();
         PortComboBox.ItemsSource = ports;
-        if (ports.Length > 0)
+        if (ports.Length > 0 && !string.IsNullOrEmpty(_interalSave.CurrentSerialGate))
+        {
+            PortComboBox.SelectedItem = _interalSave.CurrentSerialGate;
+            ConnectButton_Click(sender, e);
+        }
+        else
             PortComboBox.SelectedIndex = 0;
 
         _communicator.OnReceiveInputData += GetIncomingInputData;
@@ -53,10 +66,19 @@ public partial class MainWindow : Window
             //Mode = BindingMode.OneWay,
             Source = _inputController.CurrentAppLayer
         };
-
         BindingOperations.SetBinding(LayerNumberText, TextBlock.TextProperty, binding);
 
         _globalTick.OnTick += _inputController.Loop;
+
+        Left = _interalSave.MainWindowPosX;
+        Top = _interalSave.MainWindowPosY;
+
+        _isWindowPinned = _interalSave.MainWindowPinned;
+        PinToggleButton.IsChecked = _isWindowPinned;
+
+        Topmost = _interalSave.MainWindowTopmost;
+        TopMostToggleButton.IsChecked = Topmost;
+
     }
 
     private void GetIncomingInputData(byte[] inputData) =>
@@ -93,7 +115,7 @@ public partial class MainWindow : Window
                 ConnectButton.Content = "Disconnect";
                 ConnectButton.IsEnabled = true;
                 DeviceNameText.Text = _communicator.DeviceName ?? "Unknown device";
-                MessageBox.Show("Successfully connected to device on port: " + selectedPort, "SUCCESS");
+                //MessageBox.Show("Successfully connected to device on port: " + selectedPort, "SUCCESS");
             }
             else
             {
@@ -141,12 +163,14 @@ public partial class MainWindow : Window
     {
         _isWindowPinned = !_isWindowPinned;
         PinToggleButton.IsChecked = _isWindowPinned;
+        _interalSave.MainWindowPinned = _isWindowPinned;
     }
 
     private void TopMostToggleButton_Click(object sender, RoutedEventArgs e)
     {
         Topmost = !Topmost;
         TopMostToggleButton.IsChecked = Topmost;
+        _interalSave.MainWindowTopmost = Topmost;
     }
 
     #endregion
@@ -158,6 +182,8 @@ public partial class MainWindow : Window
     {
         if (!_isWindowPinned)
             DragMove();
+        _interalSave.MainWindowPosX = (int)Left;
+        _interalSave.MainWindowPosY = (int)Top;
     }
 
     /// <summary>
