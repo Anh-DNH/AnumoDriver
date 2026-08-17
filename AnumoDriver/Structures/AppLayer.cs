@@ -46,7 +46,7 @@ public class AppLayer : INotifyPropertyChanged
         get => _inputLayerIndex;
         set => SetProperty(ref _inputLayerIndex, value);
     }
-    private int _inputLayerIndex;
+    private int _inputLayerIndex = 0;
 
     public ObservableCollection<InputLayer> InputLayers { get; } = [];
 
@@ -88,8 +88,8 @@ public class AppLayerJsonConverter : JsonConverter<AppLayer>
                 appLayer.IconImage = ExtractIconFromFile(appLayer.ExePath);
             }
 
-            if (root.TryGetProperty("InputLayerIndex", out var inputLayerIndex))
-                appLayer.InputLayerIndex = inputLayerIndex.GetInt32();
+            //if (root.TryGetProperty("InputLayerIndex", out var inputLayerIndex))
+            //    appLayer.InputLayerIndex = inputLayerIndex.GetInt32();
 
             if (root.TryGetProperty("InputLayers", out var inputLayers))
             {
@@ -112,7 +112,7 @@ public class AppLayerJsonConverter : JsonConverter<AppLayer>
 
         writer.WriteString("Name", value.Name);
         writer.WriteString("Path", value.ExePath);
-        writer.WriteNumber("InputLayerIndex", value.InputLayerIndex);
+        //writer.WriteNumber("InputLayerIndex", value.InputLayerIndex);
 
         writer.WritePropertyName("InputLayers");
         writer.WriteRawValue(JsonSerializer.Serialize(value.InputLayers, options));

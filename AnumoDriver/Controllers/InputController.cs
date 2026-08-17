@@ -27,10 +27,12 @@ public class InputController : INotifyPropertyChanged
     }
     private AppLayer _currentAppLayer;
 
-    public InputLayer? CurrentInputLayer =>
-        CurrentAppLayer?.InputLayers.Count > 0 ? CurrentAppLayer.InputLayers[CurrentAppLayer.InputLayerIndex] : null;
-
-    public int InputLayerCount => CurrentAppLayer?.InputLayers.Count ?? 0;
+    public InputLayer? CurrentInputLayer
+    {
+        get => _currentInputLayer;
+        private set => SetProperty(ref _currentInputLayer, value);
+    }
+    private InputLayer _currentInputLayer;
 
     public string FileLocation { get; private set; }
 
@@ -90,6 +92,7 @@ public class InputController : INotifyPropertyChanged
         var def = GetDefaultAppLayer();
         AppLayerList = [def];
         CurrentAppLayer = def;
+        CurrentInputLayer = CurrentAppLayer.InputLayers[CurrentAppLayer.InputLayerIndex];
 
         FileLocation = Path.Combine(App.LocalDataFolder, "default_set.json");
 
@@ -799,15 +802,16 @@ public class InputController : INotifyPropertyChanged
         {
             if (AppLayerList[0].Name != "common")
             {
-                Trace.WriteLine($"File loaded successfully but the default set is missing or malformed! Inserting default");
+                Trace.WriteLine($"File loaded successfully but the common set is missing or malformed! Inserting default");
                 AppLayerList.Insert(0, GetDefaultAppLayer());
             }
 
             CurrentAppLayer = AppLayerList[0];
+            CurrentInputLayer = CurrentAppLayer.InputLayers[CurrentAppLayer.InputLayerIndex];
         }
         else
         {
-            Trace.WriteLine($"File loaded successfully but data is empty! Using default set!");
+            Trace.WriteLine($"File loaded successfully but data is weird! Using default set!");
             SetupDefault();
         }
 
@@ -861,6 +865,8 @@ public class InputController : INotifyPropertyChanged
         }
         else
             CurrentAppLayer = AppLayerList[0];
+
+        ChangeInputLayer(CurrentAppLayer.InputLayerIndex);
     }
 
     /// <summary>
@@ -869,19 +875,9 @@ public class InputController : INotifyPropertyChanged
     /// <param name="index"></param>
     public void ChangeInputLayer(int index)
     {
-        if (CurrentAppLayer == null)
-        {
-            Trace.WriteLine("No current AppLayer selected.");
-            return;
-        }
-        if (index < 0 || index >= CurrentAppLayer.InputLayers.Count)
-        {
-            Trace.WriteLine($"Invalid InputLayer index: {index}. Must be between 0 and {CurrentAppLayer.InputLayers.Count - 1}.");
-            return;
-        }
-
-        CurrentAppLayer.InputLayerIndex = index;
-        //Trace.WriteLine($"Changed InputLayer to index {index} for AppLayer {CurrentAppLayer.Name}.");
+        CurrentAppLayer.InputLayerIndex = Math.Clamp(index, 0, CurrentAppLayer.InputLayers.Count - 1);
+        Trace.WriteLine($"Changed InputLayer to {CurrentAppLayer.InputLayerIndex}.");
+        CurrentInputLayer = CurrentAppLayer.InputLayers[CurrentAppLayer.InputLayerIndex];
     }
 
     public void GetInput(byte[] data)

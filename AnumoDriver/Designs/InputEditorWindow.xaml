@@ -261,13 +261,13 @@
         <!--#region Inputs List-->
 
         <Rectangle 
-                Margin="8,8,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Width="703"
-                Height="520"
-                Grid.Row="2"
-                Grid.ColumnSpan="2"
+            Margin="8,8,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Width="703"
+            Height="520"
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
         >
             <Rectangle.Fill>
                 <SolidColorBrush Color="#3F6D0628" Opacity="0.75"/>

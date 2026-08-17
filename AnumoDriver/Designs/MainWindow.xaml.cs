@@ -61,13 +61,6 @@ public partial class MainWindow : Window
         _appFocusHandler.OnFocusingOnAnApp += ChangingFocusingAppData;
         ChangingFocusingAppData();
 
-        var binding = new Binding("InputLayerIndex")
-        {
-            //Mode = BindingMode.OneWay,
-            Source = _inputController.CurrentAppLayer
-        };
-        BindingOperations.SetBinding(LayerNumberText, TextBlock.TextProperty, binding);
-
         _globalTick.OnTick += _inputController.Loop;
 
         Left = _interalSave.MainWindowPosX;
@@ -87,6 +80,13 @@ public partial class MainWindow : Window
     private void ChangingFocusingAppData()
     {
         _inputController.ChangeAppLayer(_appFocusHandler.AppName);
+
+        var binding = new Binding("InputLayerIndex")
+        {
+            Mode = BindingMode.OneWay,
+            Source = _inputController.CurrentAppLayer
+        };
+        BindingOperations.SetBinding(LayerNumberText, TextBlock.TextProperty, binding);
 
         AppNameText.Text = _inputController.CurrentAppLayer.Name;
         AppIcon.Source = _inputController.CurrentAppLayer.IconImage;
